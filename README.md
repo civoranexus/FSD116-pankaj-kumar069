@@ -100,34 +100,4 @@
 
 ## 🏢 About Civora Nexus
 
-**Civora Nexus Pvt. Ltd.** is a technology company empowering communities through innovative civic and healthcare technology solutions.
-
-### Company Services:
-- 🔄 Digital Transformation for Businesses
-- 🏘️ Smart Community & Enterprise Solutions
-- 💡 Affordable Tech Solutions
-- 📊 Data Analytics & Business Insights
-- 🎓 Innovation & Skill Development
-- 🤖 AI & Automation Solutions
-
----
-
-## 📚 Quick Links
-
-- 🌐 [Official Website](https://civoranexus.com/)
-- 📋 [Internship Portal](https://civoranexus.com/internships)
-- 🔐 [Certificate Verification](https://internship.civoranexus.com)
-- 📄 [Privacy Policy](https://civoranexus.com/privacy-policy)
-- 📜 [Terms of Service](https://civoranexus.com/terms-and-conditions)
-
-
-
-<p align="center">
-  <strong>© 2025 Civora Nexus Pvt. Ltd. All rights reserved.</strong>
-</p>
-
-<p align="center">
-  Made with ❤️ by CivoraX Team
-</p>
-
 
