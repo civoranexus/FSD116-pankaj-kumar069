@@ -1,0 +1,32 @@
+{
+  "name": "nursery-seed-management",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <img src=\"https://internship.civoranexus.com/CivoraX.png\" alt=\"CivoraX Logo\" width=\"200\"/>\r </p>",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/civoranexus/FSD116-pankaj-kumar069.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/civoranexus/FSD116-pankaj-kumar069/issues"
+  },
+  "homepage": "https://github.com/civoranexus/FSD116-pankaj-kumar069#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.1.2"
+  }
+}
