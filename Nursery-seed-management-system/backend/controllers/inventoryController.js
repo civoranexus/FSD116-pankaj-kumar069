@@ -6,6 +6,7 @@ const addStock = async (req, res) => {
     const stock = await Inventory.create(req.body);
     res.status(201).json({ message: "Stock added successfully", stock });
   } catch (error) {
+    console.error("Error adding stock:", error); // 👈 log full error
     res.status(500).json({ message: "Error adding stock", error: error.message });
   }
 };
