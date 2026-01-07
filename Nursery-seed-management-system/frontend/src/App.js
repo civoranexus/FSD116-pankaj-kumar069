@@ -10,6 +10,7 @@ import Suppliers from "./components/Suppliers";
 import Procurement from "./components/Procurement";
 import Health from "./components/Health";
 import Admin from "./components/Admin";
+import SalesReport from "./components/SalesReport";
 
 function App() {
   return (
@@ -22,9 +23,11 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/suppliers" element={<Suppliers />} />
-        <Route path="/procurement" element={<Procurement />} />
+        <Route path="/procurements" element={<Procurement />} />
         <Route path="/health" element={<Health />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/sales-report" element={<SalesReport />} />
+
       </Routes>
     </Router>
   );

@@ -10,7 +10,7 @@ function Navbar() {
       <Link to="/inventory" style={{ margin: "10px", color: "white" }}>Inventory</Link>
       <Link to="/orders" style={{ margin: "10px", color: "white" }}>Orders</Link>
       <Link to="/suppliers" style={{ margin: "10px", color: "white" }}>Suppliers</Link>
-      <Link to="/procurement" style={{ margin: "10px", color: "white" }}>Procurement</Link>
+      <Link to="/procurements" style={{ margin: "10px", color: "white" }}>Procurement</Link>
       <Link to="/health" style={{ margin: "10px", color: "white" }}>Health</Link>
       <Link to="/admin" style={{ margin: "10px", color: "white" }}>Admin</Link>
     </nav>

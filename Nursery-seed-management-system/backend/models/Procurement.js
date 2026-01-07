@@ -7,11 +7,8 @@ const procurementSchema = new mongoose.Schema({
     required: true,
   },
   productName: {
-    type: String,
-    required: true,
-  },
-  batchId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Inventory",   // ✅ directly linked to Inventory
     required: true,
   },
   quantity: {
