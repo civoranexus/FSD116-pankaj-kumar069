@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./components/Login";
@@ -12,22 +12,92 @@ import Health from "./components/Health";
 import Admin from "./components/Admin";
 import SalesReport from "./components/SalesReport";
 
+// ✅ Protected Route wrapper
+const ProtectedRoute = ({ children, role }) => {
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role"); // store role at login/register
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role && userRole !== role) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
 function App() {
   return (
     <Router>
       <Navbar />
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/suppliers" element={<Suppliers />} />
-        <Route path="/procurements" element={<Procurement />} />
-        <Route path="/health" element={<Health />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/sales-report" element={<SalesReport />} />
 
+        {/* Protected routes */}
+        <Route
+          path="/inventory"
+          element={
+            <ProtectedRoute>
+              <Inventory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/suppliers"
+          element={
+            <ProtectedRoute role="admin">
+              <Suppliers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/procurements"
+          element={
+            <ProtectedRoute role="staff">
+              <Procurement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/health"
+          element={
+            <ProtectedRoute>
+              <Health />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="admin">
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sales-report"
+          element={
+            <ProtectedRoute role="admin">
+              <SalesReport />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

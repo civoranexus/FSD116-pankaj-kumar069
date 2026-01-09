@@ -19,7 +19,7 @@ const getSalesReport = async (req, res) => {
         path: "items.product",
         populate: { path: "supplier", select: "name" }
       })
-      .populate("customer");
+      .populate("customer", "name email");
 
     if (orders.length === 0) {
       return res.json({
@@ -112,7 +112,7 @@ const getMonthlySales = async (req, res) => {
       populate: { path: "supplier", select: "name" }
     });
 
-    const monthlyTotals = Array(12).fill(null).map((_, i) => ({
+    const monthlyTotals = Array.from({ length: 12 }, (_, i) => ({
       month: new Date(selectedYear, i).toLocaleString("default", { month: "long" }),
       totalRevenue: 0,
       totalOrders: 0

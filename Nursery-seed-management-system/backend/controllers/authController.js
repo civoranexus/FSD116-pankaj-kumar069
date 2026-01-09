@@ -7,6 +7,9 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // Default role = "customer" if not provided
+    const userRole = role || "customer";
+
     // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -22,10 +25,21 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role,
+      role: userRole,
     });
 
-    res.status(201).json({ message: "User registered successfully", user });
+    // Generate JWT immediately after registration
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+      token,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -49,11 +63,17 @@ const loginUser = async (req, res) => {
     }
 
     // Generate JWT
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
-    res.json({ message: "Login successful", token });
+    res.json({
+      message: "Login successful",
+      token,
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -71,6 +91,5 @@ const getUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
 
 module.exports = { registerUser, loginUser, getUser };

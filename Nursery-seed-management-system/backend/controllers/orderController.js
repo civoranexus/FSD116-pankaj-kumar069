@@ -7,6 +7,7 @@ const placeOrder = async (req, res) => {
     const { customer, items } = req.body;
     let totalAmount = 0;
 
+    // Validate items and calculate total
     for (let item of items) {
       const product = await Inventory.findById(item.product);
       if (!product) {
@@ -17,20 +18,29 @@ const placeOrder = async (req, res) => {
         return res.status(400).json({ message: `Not enough stock for ${product.name}` });
       }
 
+      // Deduct stock
       product.quantity -= item.quantity;
       await product.save();
 
-      totalAmount += item.quantity * (product.price || 0); // ✅ use actual price
+      // Ensure product has a price
+      if (typeof product.price !== "number") {
+        return res.status(400).json({ message: `Price missing for ${product.name}` });
+      }
+
+      totalAmount += item.quantity * product.price;
     }
 
+    // Create order
     const order = await Order.create({ customer, items, totalAmount });
 
+    // Populate for response
     const populatedOrder = await Order.findById(order._id)
       .populate("customer", "name email")
       .populate("items.product", "name type price");
 
     res.status(201).json({ message: "Order placed successfully", order: populatedOrder });
   } catch (error) {
+    console.error("Error placing order:", error.message);
     res.status(500).json({ message: "Error placing order", error: error.message });
   }
 };
@@ -75,22 +85,28 @@ const updateOrderStatus = async (req, res) => {
       { status: req.body.status },
       { new: true }
     )
-    .populate("customer", "name email")
-    .populate("items.product", "name type price");
+      .populate("customer", "name email")
+      .populate("items.product", "name type price");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
     res.json({ message: "Order status updated", order });
   } catch (error) {
+    console.error("Error updating order:", error.message);
     res.status(500).json({ message: "Error updating order", error: error.message });
   }
 };
 
-
+// Delete order
 const deleteOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json({ message: "Order deleted successfully" });
   } catch (error) {
+    console.error("Error deleting order:", error.message);
     res.status(500).json({ message: "Error deleting order", error: error.message });
   }
 };
