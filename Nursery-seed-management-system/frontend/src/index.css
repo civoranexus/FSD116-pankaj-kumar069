@@ -106,3 +106,53 @@ nav a:hover {
   text-align: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+
+
+
+
+
+
+
+
+/* Font Styles */
+
+/* src/index.css */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #F4F7FA; /* Background */
+  color: #071426;           /* Text Dark */
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Poppins', sans-serif;
+  color: #142C52; /* Navy Core */
+}
+
+a {
+  color: #1B9AAA; /* Primary Teal */
+  text-decoration: none;
+}
+
+button {
+  font-family: 'Inter', sans-serif;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+button.primary {
+  background-color: #16808D; /* Teal Dark */
+  color: #FFFFFF;
+}
+
+button.success {
+  background-color: #178740; /* Success Dark */
+  color: #FFFFFF;
+}
+
+button.alert {
+  background-color: #EB1414; /* Alert Dark */
+  color: #FFFFFF;
+}

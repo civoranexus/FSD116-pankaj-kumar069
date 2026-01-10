@@ -11,6 +11,7 @@ import Procurement from "./components/Procurement";
 import Health from "./components/Health";
 import Admin from "./components/Admin";
 import SalesReport from "./components/SalesReport";
+import Dashboard from "./pages/Dashboard";
 
 // ✅ Protected Route wrapper
 const ProtectedRoute = ({ children, role }) => {
@@ -39,6 +40,15 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Protected routes */}
+        <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+        />
+
         <Route
           path="/inventory"
           element={
@@ -97,7 +107,7 @@ function App() {
         />
 
         {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
     </Router>
   );
