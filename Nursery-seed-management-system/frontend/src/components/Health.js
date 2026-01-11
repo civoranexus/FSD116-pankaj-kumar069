@@ -9,6 +9,11 @@ function Health() {
     status: "Healthy",
     notes: "",
     treatment: "",
+    checkDate: "",
+    doctorName: "",       // ✅ किसने check किया
+    treatmentCost: "",    // ✅ खर्च
+    nextCheckDate: "",    // ✅ अगली जांच की तारीख
+    severity: "Low",      // ✅ गंभीरता स्तर
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -42,7 +47,18 @@ function Health() {
     try {
       const res = await API.post("/health", form);
       setRecords([...records, res.data.record]);
-      setForm({ batchId: "", plantName: "", status: "Healthy", notes: "", treatment: "" });
+      setForm({
+        batchId: "",
+        plantName: "",
+        status: "Healthy",
+        notes: "",
+        treatment: "",
+        checkDate: "",
+        doctorName: "",
+        treatmentCost: "",
+        nextCheckDate: "",
+        severity: "Low",
+      });
       setMessage({ type: "success", text: "Health record added successfully!" });
     } catch (error) {
       console.error("Error adding health record:", error.response?.data || error.message);
@@ -96,6 +112,42 @@ function Health() {
           required
         /><br />
 
+        <input
+          type="date"
+          name="checkDate"
+          value={form.checkDate}
+          onChange={handleChange}
+          required
+        /><br />
+
+        <input
+          name="doctorName"
+          placeholder="Checked By (Doctor/Staff)"
+          value={form.doctorName}
+          onChange={handleChange}
+        /><br />
+
+        <input
+          type="number"
+          name="treatmentCost"
+          placeholder="Treatment Cost (₹)"
+          value={form.treatmentCost}
+          onChange={handleChange}
+        /><br />
+
+        <input
+          type="date"
+          name="nextCheckDate"
+          value={form.nextCheckDate}
+          onChange={handleChange}
+        /><br />
+
+        <select name="severity" value={form.severity} onChange={handleChange}>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select><br />
+
         <select name="status" value={form.status} onChange={handleChange}>
           <option value="Healthy">Healthy</option>
           <option value="Under Treatment">Under Treatment</option>
@@ -128,6 +180,11 @@ function Health() {
             <tr>
               <th>Batch ID</th>
               <th>Plant Name</th>
+              <th>Check Date</th>
+              <th>Checked By</th>
+              <th>Treatment Cost</th>
+              <th>Next Check Date</th>
+              <th>Severity</th>
               <th>Status</th>
               <th>Notes</th>
               <th>Treatment</th>
@@ -139,6 +196,11 @@ function Health() {
               <tr key={r._id}>
                 <td>{r.batchId}</td>
                 <td>{r.plantName}</td>
+                <td>{r.checkDate || "N/A"}</td>
+                <td>{r.doctorName || "N/A"}</td>
+                <td>{r.treatmentCost || "0"}</td>
+                <td>{r.nextCheckDate || "N/A"}</td>
+                <td>{r.severity}</td>
                 <td>{r.status}</td>
                 <td>{r.notes || "None"}</td>
                 <td>{r.treatment || "None"}</td>
