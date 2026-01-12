@@ -1,55 +1,78 @@
-/* Global reset */
-body {
+/* ===========================
+   Global Reset & Base Styles
+   =========================== */
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f9f9f9;
-  color: #2c3e50;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Code blocks */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #F4F7FA; /* Background */
+  color: #071426;           /* Text Dark */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Headings */
-h1, h2, h3 {
-  color: #2c3e50;
+/* ===========================
+   Typography
+   =========================== */
+h1, h2, h3, h4 {
+  font-family: 'Poppins', sans-serif;
+  color: #142C52; /* Navy Core */
   margin-bottom: 1rem;
 }
 
-/* Forms */
-form {
-  margin: 1rem 0;
+a {
+  color: #1B9AAA; /* Primary Teal */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #16808D;
+  text-decoration: underline;
 }
 
-input, select, textarea, button {
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #2980b9;
-  box-shadow: 0 0 4px rgba(41, 128, 185, 0.5);
-}
-
+/* ===========================
+   Buttons
+   =========================== */
 button {
-  background-color: #2980b9;
-  color: white;
-  border: none;
+  font-family: 'Inter', sans-serif;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  border: none;
+  transition: all 0.3s ease;
 }
 
-button:hover {
-  background-color: #1f6391;
+button.primary {
+  background-color: #16808D; /* Teal Dark */
+  color: #FFFFFF;
+}
+button.primary:hover {
+  background-color: #1B9AAA;
+}
+
+button.success {
+  background-color: #178740; /* Success Dark */
+  color: #FFFFFF;
+}
+button.success:hover {
+  background-color: #22C55E;
+}
+
+button.alert {
+  background-color: #EB1414; /* Alert Dark */
+  color: #FFFFFF;
+}
+button.alert:hover {
+  background-color: #EF4444;
 }
 
 button:disabled {
@@ -57,7 +80,31 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Tables */
+/* ===========================
+   Forms
+   =========================== */
+form {
+  margin: 1rem 0;
+}
+
+input, select, textarea {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #1B9AAA;
+  box-shadow: 0 0 4px rgba(27, 154, 170, 0.4);
+}
+
+/* ===========================
+   Tables
+   =========================== */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -72,7 +119,7 @@ th, td {
 }
 
 th {
-  background-color: #2980b9;
+  background-color: #142C52;
   color: white;
 }
 
@@ -80,79 +127,77 @@ tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-/* Navbar */
+/* ===========================
+   Navbar
+   =========================== */
 nav {
-  background-color: #2c3e50;
-  padding: 10px;
+  background-color: #142C52;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 nav a {
   color: white;
-  margin: 0 10px;
-  text-decoration: none;
+  margin: 0 12px;
+  font-weight: 500;
 }
-
 nav a:hover {
-  text-decoration: underline;
+  color: #22C55E;
 }
 
-/* Cards (for dashboard summary) */
+/* ===========================
+   Cards
+   =========================== */
 .card {
   background: white;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 1rem;
   flex: 1;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
 }
 
-
-
-
-
-
-
-
-
-/* Font Styles */
-
-/* src/index.css */
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: #F4F7FA; /* Background */
-  color: #071426;           /* Text Dark */
+/* ===========================
+   Footer
+   =========================== */
+footer {
+  background: #142C52;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  margin-top: 20px;
 }
 
-h1, h2, h3, h4 {
-  font-family: 'Poppins', sans-serif;
-  color: #142C52; /* Navy Core */
+/* ===========================
+   Utility Classes
+   =========================== */
+.text-center {
+  text-align: center;
+}
+.mt-20 {
+  margin-top: 20px;
+}
+.mb-20 {
+  margin-bottom: 20px;
+}
+.p-20 {
+  padding: 20px;
 }
 
-a {
-  color: #1B9AAA; /* Primary Teal */
-  text-decoration: none;
+/* ===========================
+   Animations
+   =========================== */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
 }
-
-button {
-  font-family: 'Inter', sans-serif;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-
-button.primary {
-  background-color: #16808D; /* Teal Dark */
-  color: #FFFFFF;
-}
-
-button.success {
-  background-color: #178740; /* Success Dark */
-  color: #FFFFFF;
-}
-
-button.alert {
-  background-color: #EB1414; /* Alert Dark */
-  color: #FFFFFF;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
