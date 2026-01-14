@@ -1,10 +1,10 @@
 const Order = require("../models/Order");
 const Inventory = require("../models/Inventory");
 
-// Place new order
+/* ----------------- Place a new order ----------------- */
 const placeOrder = async (req, res) => {
   try {
-    const { customer, items } = req.body;
+    const { customer, items } = req.body; // frontend se aayega
     let totalAmount = 0;
 
     // Validate items and calculate total
@@ -45,7 +45,7 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// Get all orders
+/* ----------------- Get all orders ----------------- */
 const getOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -59,7 +59,7 @@ const getOrders = async (req, res) => {
   }
 };
 
-// Get single order by ID
+/* ----------------- Get single order by ID ----------------- */
 const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -77,7 +77,7 @@ const getOrderById = async (req, res) => {
   }
 };
 
-// Update order status
+/* ----------------- Update order status ----------------- */
 const updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(
@@ -99,11 +99,12 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-// Delete order
+/* ----------------- Delete an order ----------------- */
 const deleteOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
     if (!order) return res.status(404).json({ message: "Order not found" });
+
     res.json({ message: "Order deleted successfully" });
   } catch (error) {
     console.error("Error deleting order:", error.message);
@@ -111,4 +112,10 @@ const deleteOrder = async (req, res) => {
   }
 };
 
-module.exports = { placeOrder, getOrders, updateOrderStatus, getOrderById, deleteOrder };
+module.exports = {
+  placeOrder,
+  getOrders,
+  getOrderById,
+  updateOrderStatus,
+  deleteOrder,
+};
