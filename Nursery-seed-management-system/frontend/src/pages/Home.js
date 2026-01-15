@@ -1,55 +1,118 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "./Home.css";
 
 function Home() {
   return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h1 style={{ color: "#2c3e50" }}>🌱 Nursery & Seed Management System</h1>
-      <p style={{ fontSize: "1.2rem", marginTop: "1rem" }}>
-        Manage inventory, suppliers, procurement, orders, and plant health — all in one place.
-      </p>
+    <div className="home">
 
-      {/* Call-to-action buttons */}
-      <div style={{ marginTop: "2rem" }}>
-        <Link
-          to="/login"
-          style={{
-            margin: "10px",
-            padding: "10px 20px",
-            background: "#27ae60",
-            color: "white",
-            textDecoration: "none",
-            borderRadius: "5px",
-          }}
-        >
-          Login
-        </Link>
-        <Link
-          to="/register"
-          style={{
-            margin: "10px",
-            padding: "10px 20px",
-            background: "#2980b9",
-            color: "white",
-            textDecoration: "none",
-            borderRadius: "5px",
-          }}
-        >
-          Register
-        </Link>
-      </div>
+      {/* ================= HERO SECTION ================= */}
+      <section className="hero">
 
-      {/* Features section */}
-      <div style={{ marginTop: "3rem", textAlign: "left", maxWidth: "600px", margin: "3rem auto" }}>
-        <h2>✨ Features</h2>
-        <ul style={{ lineHeight: "1.8" }}>
-          <li>📦 Track seed, sapling, and plant inventory</li>
-          <li>🤝 Manage suppliers and procurement</li>
-          <li>🛒 Place and monitor customer orders</li>
-          <li>📊 View sales reports and analytics</li>
-          <li>🌿 Monitor plant health and treatments</li>
-        </ul>
-      </div>
+        <div className="hero-content">
+
+          {/* Optional badge for professional SaaS feel */}
+          <span className="hero-badge">
+            🌱 Smart Agriculture Platform
+          </span>
+
+          <h1 className="hero-title">
+            🌱 Smart Nursery & Seed <br />
+            <span>Management System</span>
+          </h1>
+
+          <p className="hero-subtitle">
+            A modern digital platform to efficiently manage nursery inventory,
+            seed procurement, customer orders, sales analytics, and plant health
+            — all from one centralized system.
+          </p>
+
+          <div className="hero-buttons">
+            <Link to="/login" className="btn btn-primary">
+              Get Started
+            </Link>
+            <Link to="/register" className="btn btn-secondary">
+              Create Account
+            </Link>
+          </div>
+        </div>
+
+        {/* Future animation / video section */}
+        <div className="hero-visual">
+
+          {/* 
+            Future scope:
+            - Product demo video
+            - Lottie animation
+            - Dashboard preview
+          */}
+          <div className="placeholder-box">
+            🌿 Animation / Video Area
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= FEATURES SECTION ================= */}
+      <section className="features">
+
+        <h2 className="section-title">✨  Features</h2>
+
+        <p className="section-subtitle">
+          Everything you need to run and manage a modern nursery business
+          efficiently and digitally.
+        </p>
+
+        <div className="feature-grid">
+
+          <div className="card">
+            <h3>📦 Inventory Management</h3>
+            <p>
+              Track seeds, saplings, plants, and stock levels in real-time
+              to avoid shortages and wastage.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>🤝 Supplier & Procurement</h3>
+            <p>
+              Maintain supplier records, manage procurement cycles,
+              and streamline purchase operations.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>🛒 Order Management</h3>
+            <p>
+              Easily place, monitor, and manage customer orders
+              with complete order lifecycle tracking.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>📊 Sales & Analytics</h3>
+            <p>
+              Gain insights through sales reports, performance metrics,
+              and data-driven analytics.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>🌿 Plant Health Monitoring</h3>
+            <p>
+              Record plant health data, treatments, and maintenance
+              history to ensure quality growth.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= FOOTER ================= */}
+      <footer className="footer">
+        © 2026 Smart Nursery & Seed Management System | Designed for Pankaj Sharma
+      </footer>
+
     </div>
   );
 }
