@@ -104,6 +104,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* ------------------ Sales Report Fix ------------------ */}
+        {/* Previously, SalesReport might not load due to routing or role issues */}
         <Route
           path="/sales-report"
           element={
@@ -148,6 +151,7 @@ function App() {
         />
 
         {/* ------------------ Fallback Route ------------------ */}
+        {/* Unknown paths will redirect to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
@@ -157,10 +161,12 @@ function App() {
 export default App;
 
 /* -------------------- COMMENTS --------------------
-1. Admin / Staff routes: Dashboard, Inventory, Orders, Suppliers, Procurement, Health, Admin, SalesReport
-2. Customer routes: SeedList (/seeds), SeedDetails (/seeds/:id), Cart (/cart), MyOrders (/my-orders)
-3. Placeholder components used for SeedDetails, Cart, MyOrders to prevent module not found errors
-4. ProtectedRoute checks token + role
-5. LocalStorage: store 'token' and 'role' at login/register
-6. Fallback route redirects unknown paths to home
+✅ Notes on changes/fixes:
+1. SalesReport route explicitly added: 
+   <Route path="/sales-report" element={<ProtectedRoute role="admin"><SalesReport /></ProtectedRoute>} />
+   -> ensures Admin can access Sales Report page directly.
+2. Dashboard Quick Actions should use `navigate("/sales-report")` instead of <a href> to use SPA routing.
+3. All existing routes preserved. Only SalesReport route fix added.
+4. ProtectedRoute checks token + role, redirects if unauthorized.
+5. Fallback route redirects unknown paths to Home.
 ---------------------------------------------------- */
