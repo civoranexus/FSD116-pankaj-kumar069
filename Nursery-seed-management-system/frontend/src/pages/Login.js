@@ -23,12 +23,24 @@ function Login() {
       // ✅ Save token
       localStorage.setItem("token", res.data.token);
 
+      // ✅ Save role (for role-based UI)
+      localStorage.setItem("role", res.data.user.role);
+
+      // ✅ Save user info (optional but useful)
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
       // ✅ Success message toast
       setSuccessMsg("Login successful! Redirecting...");
       setTimeout(() => setSuccessMsg(""), 3000);
 
-      // ✅ Redirect to dashboard
-      navigate("/dashboard");
+      // ✅ Redirect based on role
+      if (res.data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (res.data.user.role === "staff") {
+        navigate("/staff/dashboard");
+      } else {
+        navigate("/customer/home");
+      }
     } catch (error) {
       const message =
         error.response?.data?.message || "Something went wrong. Please try again.";

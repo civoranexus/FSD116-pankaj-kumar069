@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 // Protect routes (any logged-in user)
-const protect = (req, res, next) => {
+const protect = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // Expect "Bearer <token>"
 
   if (!token) {
@@ -10,7 +11,14 @@ const protect = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // attach user info (id, role) to request
+
+    // Fetch user from DB to ensure user exists and role is current
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user; // attach user info (id, role, name, email) to request
     next();
   } catch (error) {
     res.status(401).json({ message: "Invalid token" });

@@ -1,5 +1,5 @@
 import React from "react";
-import SeedList from "./SeedList";
+import SeedList from "../components/SeedList";
 
 function CustomerHome() {
   return (

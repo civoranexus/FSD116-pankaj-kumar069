@@ -1,38 +1,41 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Inventory from "./components/Inventory";
-import Orders from "./components/Orders";
-import Suppliers from "./components/Suppliers";
-import Procurement from "./components/Procurement";
-import Health from "./components/Health";
-import Admin from "./components/Admin";
-import SalesReport from "./components/SalesReport";
-import Dashboard from "./pages/Dashboard";
 
-// ✅ Customer Components
+import Navbar from "./components/Navbar";
 import SeedList from "./components/SeedList";
 
-// ---- PLACEHOLDERS for components not yet created ----
-const SeedDetails = () => <div>Seed Details Page (Under Construction)</div>;
-const Cart = () => <div>Cart Page (Under Construction)</div>;
-const MyOrders = () => <div>My Orders Page (Under Construction)</div>;
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Orders from "./pages/Orders";
 
-// ✅ Protected Route wrapper
+import Admin from "./pages/admin/Admin";
+import Dashboard from "./pages/admin/Dashboard";
+import Inventory from "./pages/admin/Inventory";
+import SalesReport from "./pages/admin/SalesReport";
+import Suppliers from "./pages/admin/Suppliers";
+import Procurement from "./pages/admin/Procurement";
+import Health from "./pages/admin/Health";
+
+// ✅ New Import: Staff Dashboard
+import Staff from "./pages/admin/Staff"; // <-- added
+
+// ---- PLACEHOLDERS ----
+// (Temporary placeholders for pages not created yet)
+const SeedDetails = () => <div>Seed Details Page</div>;
+const Cart = () => <div>Cart Page</div>;
+const MyOrders = () => <div>My Orders Page</div>;
+
+// ✅ Protected Route
 const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem("token");
-  const userRole = localStorage.getItem("role"); // store role at login/register
+  const userRole = localStorage.getItem("role");
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  // If not logged in
+  if (!token) return <Navigate to="/login" replace />;
 
-  if (role && userRole !== role) {
-    return <Navigate to="/" replace />;
-  }
+  // If role is passed (like admin-only)
+  if (role && userRole !== role) return <Navigate to="/" replace />;
 
   return children;
 };
@@ -41,13 +44,14 @@ function App() {
   return (
     <Router>
       <Navbar />
+
       <Routes>
-        {/* ------------------ Public routes ------------------ */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* ------------------ Admin / Staff Routes ------------------ */}
+        {/* Admin / Staff */}
         <Route
           path="/dashboard"
           element={
@@ -56,6 +60,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/inventory"
           element={
@@ -64,6 +69,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/orders"
           element={
@@ -72,6 +78,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/suppliers"
           element={
@@ -80,6 +87,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/procurements"
           element={
@@ -88,6 +96,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/health"
           element={
@@ -96,6 +105,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/admin"
           element={
@@ -105,8 +115,7 @@ function App() {
           }
         />
 
-        {/* ------------------ Sales Report Fix ------------------ */}
-        {/* Previously, SalesReport might not load due to routing or role issues */}
+        {/* Sales Report Route */}
         <Route
           path="/sales-report"
           element={
@@ -116,7 +125,17 @@ function App() {
           }
         />
 
-        {/* ------------------ Customer Routes ------------------ */}
+        {/* ✅ NEW: Staff Dashboard Route */}
+        <Route
+          path="/staff"
+          element={
+            <ProtectedRoute role="staff">
+              <Staff />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Customer */}
         <Route
           path="/seeds"
           element={
@@ -125,6 +144,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/seeds/:id"
           element={
@@ -133,6 +153,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/cart"
           element={
@@ -141,6 +162,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/my-orders"
           element={
@@ -150,8 +172,7 @@ function App() {
           }
         />
 
-        {/* ------------------ Fallback Route ------------------ */}
-        {/* Unknown paths will redirect to Home */}
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
@@ -159,14 +180,3 @@ function App() {
 }
 
 export default App;
-
-/* -------------------- COMMENTS --------------------
-✅ Notes on changes/fixes:
-1. SalesReport route explicitly added: 
-   <Route path="/sales-report" element={<ProtectedRoute role="admin"><SalesReport /></ProtectedRoute>} />
-   -> ensures Admin can access Sales Report page directly.
-2. Dashboard Quick Actions should use `navigate("/sales-report")` instead of <a href> to use SPA routing.
-3. All existing routes preserved. Only SalesReport route fix added.
-4. ProtectedRoute checks token + role, redirects if unauthorized.
-5. Fallback route redirects unknown paths to Home.
----------------------------------------------------- */

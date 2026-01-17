@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API from "../api";
+import API from "../../api";
 
 function SalesReport() {
   const [report, setReport] = useState(null);

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs"); // password hash karne ke liye
+const bcrypt = require("bcryptjs"); // password hashing
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,17 +19,16 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["staff", "customer", "admin"],
+    enum: ["admin", "staff", "customer"],
     default: "customer",
   },
 }, { timestamps: true });
 
 /* 
-  Password hashing before saving user 
-  - Automatically encrypts password before saving
+  Password hashing before saving user
 */
 userSchema.pre("save", async function(next) {
-  if (!this.isModified("password")) return next(); // agar password change nahi hua to skip
+  if (!this.isModified("password")) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -41,7 +40,7 @@ userSchema.pre("save", async function(next) {
 });
 
 /* 
-  Method to compare password during login 
+  Compare password during login
 */
 userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);

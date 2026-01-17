@@ -105,10 +105,17 @@ function Navbar() {
                   </NavLink>
                 </>
               )}
+
+              {/* ✅ NEW: Staff Dashboard Link */}
               {role === "staff" && (
-                <NavLink to="/procurements" style={linkStyle}>
-                  Procurement
-                </NavLink>
+                <>
+                  <NavLink to="/procurements" style={linkStyle}>
+                    Procurement
+                  </NavLink>
+                  <NavLink to="/staff" style={linkStyle}>
+                    Staff Dashboard
+                  </NavLink>
+                </>
               )}
 
               <NavLink to="/health" style={linkStyle}>

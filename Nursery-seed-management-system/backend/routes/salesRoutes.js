@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const { getSalesReport, getMonthlySales } = require("../controllers/salesController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 
