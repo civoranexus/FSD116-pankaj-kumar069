@@ -11,7 +11,9 @@ const { protect, authorize } = require("../middleware/authMiddleware");
 
 // Get all customers (basic list for dropdowns)
 // Access: admin + staff
-router.get("/", protect, authorize("admin", "staff"), async (req, res) => {
+// ⚠️ NOTE: Customer dropdown needs customers list too,
+// so we allow customer role as well (or restrict to admin/staff only)
+router.get("/", protect, authorize("admin", "staff", "customer"), async (req, res) => {
   try {
     const customers = await User.find({ role: "customer" }, "_id name email");
     res.json(customers);

@@ -9,15 +9,25 @@ function Orders() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
 
+  // Role from localStorage
+  const role = localStorage.getItem("role");
+
   // Fetch inventory + orders
   useEffect(() => {
     const fetchData = async () => {
       try {
         const invRes = await API.get("/inventory");
-        setInventory(invRes.data);
+        setInventory(invRes.data.inventory || invRes.data || []);
 
-        const ordRes = await API.get("/orders");
-        setOrders(ordRes.data);
+        // Customer sees only own orders
+        let ordRes;
+        if (role === "customer") {
+          ordRes = await API.get("/orders/myorders");
+        } else {
+          ordRes = await API.get("/orders");
+        }
+
+        setOrders(ordRes.data.orders || ordRes.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         setMessage({ type: "error", text: "Failed to load orders/inventory." });
@@ -26,20 +36,22 @@ function Orders() {
       }
     };
     fetchData();
-  }, []);
+  }, [role]);
 
-  // Fetch customers
+  // Fetch customers (only for admin/staff)
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const res = await API.get("/customers");
-        setCustomers(res.data);
+        if (role === "admin" || role === "staff") {
+          const res = await API.get("/customers");
+          setCustomers(res.data.customers || res.data || []);
+        }
       } catch (error) {
         console.error("Error fetching customers:", error);
       }
     };
     fetchCustomers();
-  }, []);
+  }, [role]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,11 +63,18 @@ function Orders() {
 
     try {
       const payload = {
-        customer: form.customer,
+        customer:
+          role === "customer"
+            ? localStorage.getItem("userId")
+            : form.customer,
         items: [{ product: form.product, quantity: Number(form.quantity) }],
       };
+
       const res = await API.post("/orders", payload);
-      setOrders([...orders, res.data.order]);
+
+      const newOrder = res.data.order || res.data;
+      setOrders([...orders, newOrder]);
+
       setForm({ customer: "", product: "", quantity: "" });
       setMessage({ type: "success", text: "Order placed successfully!" });
     } catch (error) {
@@ -69,14 +88,15 @@ function Orders() {
 
   const calculateTotal = () => {
     if (!form.product || !form.quantity) return 0;
-    const selected = inventory.find((i) => i._id === form.product);
+    const selected = inventory?.find((i) => i._id === form.product);
     return selected ? selected.price * form.quantity : 0;
   };
 
   const updateStatus = async (id, status) => {
     try {
       const res = await API.put(`/orders/${id}/status`, { status });
-      setOrders(orders.map((o) => (o._id === id ? res.data.order : o)));
+      const updatedOrder = res.data.order || res.data;
+      setOrders(orders.map((o) => (o._id === id ? updatedOrder : o)));
       setMessage({ type: "success", text: "Order status updated!" });
     } catch (error) {
       console.error("Error updating status:", error.response?.data || error.message);
@@ -87,7 +107,7 @@ function Orders() {
     }
   };
 
-  // ✅ Styles
+  // Styles
   const inputStyle = {
     padding: "10px",
     borderRadius: "6px",
@@ -95,6 +115,7 @@ function Orders() {
     width: "100%",
     boxSizing: "border-box",
   };
+
   const thStyle = { padding: "10px", borderBottom: "1px solid #ccc", background: "#f0f0f0" };
   const tdStyle = { padding: "10px", borderBottom: "1px solid #eee", textAlign: "center" };
 
@@ -113,7 +134,6 @@ function Orders() {
     <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", backgroundColor: "#f5f6fa" }}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Orders Management</h2>
 
-      {/* Feedback messages */}
       {message.text && (
         <p style={{
           color: message.type === "error" ? "#f44336" : "#4CAF50",
@@ -123,7 +143,6 @@ function Orders() {
         }}>{message.text}</p>
       )}
 
-      {/* Place Order Form */}
       <form style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -134,21 +153,36 @@ function Orders() {
         boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
         marginBottom: "30px",
       }} onSubmit={handleSubmit}>
-        <select name="customer" value={form.customer} onChange={handleChange} required style={inputStyle}>
-          <option value="">Select Customer</option>
-          {customers.map((c) => (
-            <option key={c._id} value={c._id}>{c.name} ({c.email})</option>
-          ))}
-        </select>
+
+        {/* Customer dropdown only for admin/staff */}
+        {(role === "admin" || role === "staff") && (
+          <select name="customer" value={form.customer} onChange={handleChange} required style={inputStyle}>
+            <option value="">Select Customer</option>
+            {customers?.map((c) => (
+              <option key={c._id} value={c._id}>{c.name} ({c.email})</option>
+            ))}
+          </select>
+        )}
 
         <select name="product" value={form.product} onChange={handleChange} required style={inputStyle}>
           <option value="">Select Product</option>
-          {inventory.map((i) => (
-            <option key={i._id} value={i._id}>{i.name} ({i.type}) — {i.quantity} in stock — ₹{i.price}</option>
+          {inventory?.map((i) => (
+            <option key={i._id} value={i._id}>
+              {i.name} ({i.type}) — {i.quantity} in stock — ₹{i.price}
+            </option>
           ))}
         </select>
 
-        <input name="quantity" type="number" placeholder="Quantity" value={form.quantity} onChange={handleChange} required min="1" style={inputStyle} />
+        <input
+          name="quantity"
+          type="number"
+          placeholder="Quantity"
+          value={form.quantity}
+          onChange={handleChange}
+          required
+          min="1"
+          style={inputStyle}
+        />
 
         <p style={{ alignSelf: "center" }}>Total: ₹{calculateTotal()}</p>
 
@@ -163,14 +197,18 @@ function Orders() {
           cursor: "pointer",
           transition: "all 0.3s ease",
         }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#1976D2")}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#2196F3")}
-        disabled={!form.customer || !form.product || !form.quantity}>
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#1976D2")}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#2196F3")}
+          disabled={
+            role === "customer"
+              ? !form.product || !form.quantity
+              : !form.customer || !form.product || !form.quantity
+          }
+        >
           Place Order
         </button>
       </form>
 
-      {/* Orders Table */}
       <h3 style={{ marginBottom: "15px" }}>Existing Orders</h3>
       <div style={{
         overflowX: "auto",
@@ -194,15 +232,19 @@ function Orders() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
+              {orders?.map((order) => (
                 <tr key={order._id}>
                   <td style={tdStyle}>{order._id}</td>
                   <td style={tdStyle}>{order.customer?.name} ({order.customer?.email})</td>
-                  <td style={{...tdStyle, color: "#fff", fontWeight: "bold", backgroundColor: statusColor(order.status), borderRadius: "6px"}}>{order.status}</td>
+                  <td style={{ ...tdStyle, color: "#fff", fontWeight: "bold", backgroundColor: statusColor(order.status), borderRadius: "6px" }}>
+                    {order.status}
+                  </td>
                   <td style={tdStyle}>
-                    <ul style={{paddingLeft: "10px", textAlign: "left"}}>
-                      {order.items.map((i, idx) => (
-                        <li key={idx}>{i.product?.name} ({i.product?.type}) — Qty: {i.quantity} — ₹{i.product?.price}</li>
+                    <ul style={{ paddingLeft: "10px", textAlign: "left" }}>
+                      {order.items?.map((i, idx) => (
+                        <li key={idx}>
+                          {i.product?.name} ({i.product?.type}) — Qty: {i.quantity} — ₹{i.product?.price}
+                        </li>
                       ))}
                     </ul>
                   </td>
@@ -225,7 +267,7 @@ function Orders() {
         )}
       </div>
 
-      {/* ✅ Original code preserved */}
+      {/* -------------------- OLD CODE (kept as comment) -------------------- */}
       {/*
       Original form:
       <form onSubmit={handleSubmit}> ... </form>

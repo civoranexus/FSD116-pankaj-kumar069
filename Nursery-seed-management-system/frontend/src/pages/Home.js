@@ -37,17 +37,40 @@ function Home() {
           </div>
         </div>
 
-        {/* Future animation / video section */}
+        {/* ================= HERO VIDEO SECTION ================= */}
         <div className="hero-visual">
 
-          {/* 
-            Future scope:
-            - Product demo video
-            - Lottie animation
-            - Dashboard preview
-          */}
           <div className="placeholder-box">
             🌿 Animation / Video Area
+
+            {/* ❌ OLD WRONG CODE (FOLDER PATH — NOT ALLOWED) */}
+            {/*
+            <video
+              className="videos"
+              src="frontend/public/videos"
+              autoPlay
+              loop
+              muted
+            />
+            */}
+
+            {/* ✅ NEW CORRECT CODE */}
+            {/* 
+              NOTE:
+              Video file location:
+              frontend/public/videos/nursery.mp4
+
+              public folder = root (/)
+            */}
+            <video
+              className="videos"
+              src="/videos/nursery.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+
           </div>
 
         </div>
@@ -56,7 +79,7 @@ function Home() {
       {/* ================= FEATURES SECTION ================= */}
       <section className="features">
 
-        <h2 className="section-title">✨  Features</h2>
+        <h2 className="section-title">✨ Features</h2>
 
         <p className="section-subtitle">
           Everything you need to run and manage a modern nursery business

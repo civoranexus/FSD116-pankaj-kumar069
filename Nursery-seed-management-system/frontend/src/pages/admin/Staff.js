@@ -15,13 +15,25 @@ function Staff() {
       setLoading(true);
       try {
         const invRes = await API.get("/inventory");
-        setInventory(invRes.data);
+
+        // Agar response me direct array hai:
+        // setInventory(invRes.data);
+        // Agar response me { inventory: [] } format hai:
+        setInventory(invRes.data.inventory || invRes.data || []);
 
         const procRes = await API.get("/procurements");
-        setProcurements(procRes.data);
+
+        // Agar response me direct array hai:
+        // setProcurements(procRes.data);
+        // Agar response me { procurements: [] } format hai:
+        setProcurements(procRes.data.procurements || procRes.data || []);
 
         const supRes = await API.get("/suppliers");
-        setSuppliers(supRes.data);
+
+        // Agar response me direct array hai:
+        // setSuppliers(supRes.data);
+        // Agar response me { suppliers: [] } format hai:
+        setSuppliers(supRes.data.suppliers || supRes.data || []);
       } catch (error) {
         console.error("Error fetching staff data:", error);
         setMessage({ type: "error", text: "Failed to load staff data." });
@@ -118,7 +130,8 @@ function Staff() {
                   <td className="py-2">{p._id}</td>
                   <td className="py-2">{p.supplier?.name || "Unknown"}</td>
                   <td className="py-2">
-                    {p.items.map((i, idx) => (
+                    {/* p.items may be undefined so we use optional chaining */}
+                    {p.items?.map((i, idx) => (
                       <div key={idx}>
                         {i.product?.name} x {i.quantity}
                       </div>

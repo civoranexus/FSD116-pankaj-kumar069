@@ -134,7 +134,27 @@
   font-weight: 700;
   font-size: 16px;
   border: 1px dashed rgba(31,122,85,0.3);
+  overflow: hidden; /* IMPORTANT */
+  position: relative;
 }
+
+/* ========================= VIDEO STYLE ========================= */
+
+/* 🔥 Video ko placeholder ke andar fit karne ke liye */
+.videos {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* ========================= OPTIONAL: Placeholder TEXT HIDE WHEN VIDEO ADDED ========================= */
+
+/*
+.placeholder-box {
+  display: none;
+}
+*/
 
 /* ================= FEATURES ================= */
 .features {
@@ -215,4 +235,21 @@
   color: #e5e7eb;
   font-size: 14px;
   letter-spacing: 0.3px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 60px 25px;
+    text-align: center;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .placeholder-box {
+    height: 240px;
+  }
 }

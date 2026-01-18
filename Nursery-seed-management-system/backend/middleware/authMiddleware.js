@@ -3,7 +3,8 @@ const User = require("../models/User");
 
 // Protect routes (any logged-in user)
 const protect = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Expect "Bearer <token>"
+  // Expect token in header: Authorization: Bearer <token>
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -21,13 +22,20 @@ const protect = async (req, res, next) => {
     req.user = user; // attach user info (id, role, name, email) to request
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    // If token expired or invalid
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
 // Role-based authorization
 const authorize = (...roles) => {
   return (req, res, next) => {
+    // ⚠️ IMPORTANT: req.user should already exist (protected route)
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Check if user role is in allowed roles
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Access denied: insufficient permissions" });
     }

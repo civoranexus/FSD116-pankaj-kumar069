@@ -20,9 +20,19 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (res) => res,
   (error) => {
+    // If unauthorized, remove token and redirect to login
     if (error.response?.status === 401) {
-      // ✅ Token expired or invalid → clear storage and redirect
       localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      
+      // ⚠️ Better to use React Router redirect if possible
+      // window.location.href = "/login";
+
+      // If using React Router v6, you can use:
+      // window.location.assign("/login");
+
+      // Or you can show a message and redirect manually
+      alert("Session expired. Please login again.");
       window.location.href = "/login";
     }
     return Promise.reject(error);
