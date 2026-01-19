@@ -24,13 +24,24 @@ Customer → sirf apna data
 
 /* =====================================================
    CUSTOMER ROUTES
-===================================================== */
+==================================================== */
 
-// ✅ Customer place order (sirf apna)
+/* 
+  ❌ OLD CODE (Customer only)
+  router.post("/", protect, authorize("customer"), placeOrder);
+*/
+
+/*
+  ✅ NEW CODE (Customer + Staff + Admin)
+  Why?
+  - Customer can place order
+  - Staff/Admin can also place order (for testing or internal)
+  - Avoids “Access denied” issue
+*/
 router.post(
   "/",
   protect,
-  authorize("customer"),
+  authorize("customer", "staff", "admin"),
   placeOrder
 );
 
@@ -45,7 +56,7 @@ router.get(
 
 /* =====================================================
    STAFF & ADMIN ROUTES
-===================================================== */
+==================================================== */
 
 // ✅ Staff + Admin → saare customers ke orders
 // ❌ Customer ko access nahi
@@ -75,7 +86,7 @@ router.put(
 
 /* =====================================================
    ADMIN ONLY ROUTES
-===================================================== */
+==================================================== */
 
 // ✅ Sirf Admin → order delete
 // ❌ Staff bhi delete nahi kar sakta (professional rule)

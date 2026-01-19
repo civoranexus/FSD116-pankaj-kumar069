@@ -1,0 +1,142 @@
+/* ================= BASE ================= */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.navbar-scrolled {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.navbar-inner {
+  max-width: 1300px;
+  margin: auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ================= LOGO ================= */
+.navbar-logo {
+  font-size: 22px;
+  font-weight: 800;
+  text-decoration: none;
+  color: #14532d;
+}
+
+.navbar-logo span {
+  color: #16a34a;
+}
+
+/* ================= LINKS ================= */
+.nav-links {
+  display: flex;
+  gap: 22px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-item::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: 0;
+  background: #16a34a;
+  transition: width 0.3s ease;
+}
+
+.nav-item:hover::after,
+.nav-item.active::after {
+  width: 100%;
+}
+
+.nav-item.active {
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* Highlight button */
+.nav-item.highlight {
+  background: #16a34a;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+
+/* Admin emphasis */
+.nav-item.admin {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+/* ================= ACTIONS ================= */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.role-badge {
+  font-size: 13px;
+  background: #ecfdf5;
+  color: #166534;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.logout-btn {
+  border: 1px solid #dc2626;
+  background: transparent;
+  color: #dc2626;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  color: white;
+}
+
+/* ================= MOBILE ================= */
+.menu-toggle {
+  display: none;
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    flex-direction: column;
+    padding: 20px;
+    display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+}

@@ -1,0 +1,253 @@
+/* ======================================================
+   GLOBAL FOUNDATION (Clean, Lighthouse Friendly)
+====================================================== */
+.home {
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #111827;
+  background-color: #ffffff;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* utility */
+.section-padding {
+  padding: 90px 20px;
+}
+
+.max-width {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ======================================================
+   HERO SECTION – FIRST IMPRESSION MATTERS
+====================================================== */
+.hero {
+  max-width: 1200px;
+  margin: auto;
+  padding: 100px 20px 120px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 70px;
+  align-items: center;
+}
+
+/* badge */
+.hero-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #dcfce7, #ecfdf3);
+  color: #15803d;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* heading */
+.hero-title {
+  font-size: 48px;
+  line-height: 1.15;
+  margin-bottom: 22px;
+  letter-spacing: -0.5px;
+}
+
+.hero-title span {
+  color: #15803d;
+}
+
+/* subtitle */
+.hero-subtitle {
+  font-size: 18px;
+  color: #4b5563;
+  max-width: 520px;
+  margin-bottom: 36px;
+}
+
+/* buttons */
+.hero-buttons {
+  display: flex;
+  gap: 18px;
+}
+
+.btn {
+  padding: 13px 30px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  will-change: transform;
+}
+
+/* primary */
+.btn-primary {
+  background: linear-gradient(135deg, #15803d, #166534);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(21, 128, 61, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(21, 128, 61, 0.35);
+}
+
+/* secondary */
+.btn-secondary {
+  border: 2px solid #15803d;
+  color: #15803d;
+  background: #ffffff;
+}
+
+.btn-secondary:hover {
+  background: #15803d;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* hero visual */
+.hero-visual video {
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18);
+  background: #000;
+}
+
+/* ======================================================
+   TRUST / METRICS SECTION
+====================================================== */
+.trust-section {
+  background: #f9fafb;
+  padding: 80px 20px;
+}
+
+.trust-grid {
+  max-width: 1000px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  text-align: center;
+}
+
+.trust-grid h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #15803d;
+}
+
+.trust-grid p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ======================================================
+   FEATURES – CARD BASED PROFESSIONAL LAYOUT
+====================================================== */
+.features {
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 38px;
+  letter-spacing: -0.4px;
+  margin-bottom: 12px;
+}
+
+.section-subtitle {
+  color: #6b7280;
+  max-width: 620px;
+  margin: 0 auto 60px;
+}
+
+/* grid */
+.feature-grid {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* card */
+.card {
+  background: #ffffff;
+  padding: 32px 30px;
+  border-radius: 18px;
+  text-align: left;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+  font-size: 19px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* ======================================================
+   CTA – STRONG ENDING
+====================================================== */
+.cta-section {
+  background: linear-gradient(135deg, #15803d, #14532d);
+  color: #ffffff;
+  padding: 90px 20px;
+  text-align: center;
+}
+
+.cta-section h2 {
+  font-size: 36px;
+  margin-bottom: 14px;
+}
+
+.cta-section p {
+  color: #dcfce7;
+  margin-bottom: 32px;
+  font-size: 17px;
+}
+
+/* ======================================================
+   FOOTER
+====================================================== */
+.footer {
+  background: #f9fafb;
+  padding: 34px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 80px 20px 100px;
+  }
+
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
