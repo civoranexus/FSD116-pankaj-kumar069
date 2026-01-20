@@ -249,14 +249,20 @@ function Orders() {
                     </ul>
                   </td>
                   <td style={tdStyle}>{order.totalAmount}</td>
+
+                  {/* Status update only for staff/admin */}
                   <td style={tdStyle}>
-                    <select value={order.status} onChange={(e) => updateStatus(order._id, e.target.value)} style={inputStyle}>
-                      <option value="Pending">Pending</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Packed">Packed</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="Completed">Completed</option>
-                    </select>
+                    {role === "admin" || role === "staff" ? (
+                      <select value={order.status} onChange={(e) => updateStatus(order._id, e.target.value)} style={inputStyle}>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Packed">Packed</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    ) : (
+                      <span>Not allowed</span>
+                    )}
                   </td>
                 </tr>
               ))}

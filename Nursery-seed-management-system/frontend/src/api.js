@@ -4,19 +4,26 @@ const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api", // ✅ dynamic base URL
 });
 
+// ===============================
 // Request interceptor: attach token if available
+// ===============================
 API.interceptors.request.use(
   (req) => {
     const token = localStorage.getItem("token");
+
+    // ✅ If token exists, attach it to Authorization header
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
     }
+
     return req;
   },
   (error) => Promise.reject(error)
 );
 
+// ===============================
 // Response interceptor: handle errors globally
+// ===============================
 API.interceptors.response.use(
   (res) => res,
   (error) => {
@@ -24,17 +31,13 @@ API.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
-      
-      // ⚠️ Better to use React Router redirect if possible
-      // window.location.href = "/login";
 
-      // If using React Router v6, you can use:
-      // window.location.assign("/login");
-
-      // Or you can show a message and redirect manually
+      // ⚠️ This is a temporary redirect method.
+      // You can replace this with React Router navigate if you want.
       alert("Session expired. Please login again.");
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );

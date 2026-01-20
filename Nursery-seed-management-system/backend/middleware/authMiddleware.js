@@ -1,7 +1,12 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Protect routes (any logged-in user)
+/* ======================================================
+   PROTECT MIDDLEWARE
+   - Validates JWT token
+   - Attaches user object to req.user
+   - Returns 401 if invalid/expired/no token
+====================================================== */
 const protect = async (req, res, next) => {
   // Expect token in header: Authorization: Bearer <token>
   const token = req.headers.authorization?.split(" ")[1];
@@ -27,7 +32,11 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Role-based authorization
+/* ======================================================
+   AUTHORIZE MIDDLEWARE
+   - Checks if req.user.role is allowed
+   - Returns 403 if not allowed
+====================================================== */
 const authorize = (...roles) => {
   return (req, res, next) => {
     // ⚠️ IMPORTANT: req.user should already exist (protected route)

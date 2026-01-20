@@ -7,7 +7,7 @@ const {
   getOrderById,
   updateOrderStatus,
   deleteOrder,
-  getMyOrders, // ✅ Customer ke liye
+  getMyOrders,
 } = require("../controllers/orderController");
 
 const { protect, authorize } = require("../middleware/authMiddleware");
@@ -26,18 +26,7 @@ Customer → sirf apna data
    CUSTOMER ROUTES
 ==================================================== */
 
-/* 
-  ❌ OLD CODE (Customer only)
-  router.post("/", protect, authorize("customer"), placeOrder);
-*/
-
-/*
-  ✅ NEW CODE (Customer + Staff + Admin)
-  Why?
-  - Customer can place order
-  - Staff/Admin can also place order (for testing or internal)
-  - Avoids “Access denied” issue
-*/
+// Customer + Staff + Admin → order place
 router.post(
   "/",
   protect,
@@ -45,56 +34,27 @@ router.post(
   placeOrder
 );
 
-// ✅ Customer apne orders dekhega
-// GET /orders/myorders
-router.get(
-  "/myorders",
-  protect,
-  authorize("customer"),
-  getMyOrders
-);
+// Customer → apne orders dekh sakta hai
+router.get("/myorders", protect, authorize("customer"), getMyOrders);
 
 /* =====================================================
    STAFF & ADMIN ROUTES
 ==================================================== */
 
-// ✅ Staff + Admin → saare customers ke orders
-// ❌ Customer ko access nahi
-router.get(
-  "/",
-  protect,
-  authorize("admin", "staff"),
-  getOrders
-);
+// Staff + Admin → saare orders
+router.get("/", protect, authorize("admin", "staff"), getOrders);
 
-// ✅ Staff + Admin → kisi bhi order ka detail
-router.get(
-  "/:id",
-  protect,
-  authorize("admin", "staff"),
-  getOrderById
-);
+// Staff + Admin → kisi bhi order ka detail
+router.get("/:id", protect, authorize("admin", "staff"), getOrderById);
 
-// ✅ Staff + Admin → order status update
-// Customer ye kaam kabhi nahi karega
-router.put(
-  "/:id/status",
-  protect,
-  authorize("admin", "staff"),
-  updateOrderStatus
-);
+// Staff + Admin → order status update
+router.put("/:id/status", protect, authorize("admin", "staff"), updateOrderStatus);
 
 /* =====================================================
    ADMIN ONLY ROUTES
 ==================================================== */
 
-// ✅ Sirf Admin → order delete
-// ❌ Staff bhi delete nahi kar sakta (professional rule)
-router.delete(
-  "/:id",
-  protect,
-  authorize("admin"),
-  deleteOrder
-);
+// Admin → order delete
+router.delete("/:id", protect, authorize("admin"), deleteOrder);
 
 module.exports = router;

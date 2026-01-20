@@ -197,7 +197,7 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    /* ❌ OLD DIRECT UPDATE */
+    /* ❌ OLD Direct update */
     /*
     order.status = req.body.status;
     await order.save();

@@ -3,10 +3,12 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
 
-  const [menuOpen, setMenuOpen] = useState(false); // Added for responsive mobile menu
+  // 🔐 Auth data
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role"); // admin | staff | customer
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -30,20 +32,20 @@ function Navbar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        flexWrap: "wrap", // Added for responsive
+        flexWrap: "wrap",
       }}
     >
-      {/* Left side links */}
+      {/* ================= LEFT SIDE ================= */}
       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ fontWeight: "bold", fontSize: "20px", marginRight: "20px" }}>
           Nursery Seed System
         </div>
 
-        {/* Hamburger menu for small screens */}
+        {/* 🍔 Hamburger button (future responsive use) */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           style={{
-            display: "none", // Hide on desktop
+            display: "none",
             background: "transparent",
             border: "1px solid white",
             color: "white",
@@ -52,22 +54,23 @@ function Navbar() {
             borderRadius: "4px",
             fontSize: "18px",
           }}
-          className="hamburger-button"
         >
           ☰
         </button>
 
         <div
           style={{
-            display: menuOpen ? "flex" : "flex",
+            display: "flex",
             flexDirection: menuOpen ? "column" : "row",
             alignItems: menuOpen ? "flex-start" : "center",
           }}
         >
+          {/* 🏠 Common Home */}
           <NavLink to="/" style={linkStyle}>
             Home
           </NavLink>
 
+          {/* ================= NOT LOGGED IN ================= */}
           {!token && (
             <>
               <NavLink to="/login" style={linkStyle}>
@@ -79,19 +82,55 @@ function Navbar() {
             </>
           )}
 
+          {/* ================= LOGGED IN ================= */}
           {token && (
             <>
+              {/* Dashboard sab ke liye */}
               <NavLink to="/dashboard" style={linkStyle}>
                 Dashboard
               </NavLink>
-              <NavLink to="/inventory" style={linkStyle}>
-                Inventory
-              </NavLink>
-              <NavLink to="/orders" style={linkStyle}>
-                Orders
-              </NavLink>
 
-              {/* Role-based links */}
+              {/* ================= CUSTOMER LINKS ================= */}
+              {role === "customer" && (
+                <>
+                  <NavLink to="/my-orders" style={linkStyle}>
+                    My Orders
+                  </NavLink>
+                  <NavLink to="/cart" style={linkStyle}>
+                    Cart
+                  </NavLink>
+
+                  {/* ❌ CUSTOMER KO YEH NAHI DIKHANA */}
+                  {/*
+                  <NavLink to="/inventory" style={linkStyle}>
+                    Inventory
+                  </NavLink>
+                  <NavLink to="/orders" style={linkStyle}>
+                    Orders
+                  </NavLink>
+                  <NavLink to="/health" style={linkStyle}>
+                    Health
+                  </NavLink>
+                  */}
+                </>
+              )}
+
+              {/* ================= ADMIN / STAFF LINKS ================= */}
+              {(role === "admin" || role === "staff") && (
+                <>
+                  <NavLink to="/inventory" style={linkStyle}>
+                    Inventory
+                  </NavLink>
+                  <NavLink to="/orders" style={linkStyle}>
+                    Orders
+                  </NavLink>
+                  <NavLink to="/health" style={linkStyle}>
+                    Health
+                  </NavLink>
+                </>
+              )}
+
+              {/* ================= ADMIN ONLY ================= */}
               {role === "admin" && (
                 <>
                   <NavLink to="/suppliers" style={linkStyle}>
@@ -106,7 +145,7 @@ function Navbar() {
                 </>
               )}
 
-              {/* ✅ NEW: Staff Dashboard Link */}
+              {/* ================= STAFF ONLY ================= */}
               {role === "staff" && (
                 <>
                   <NavLink to="/procurements" style={linkStyle}>
@@ -117,23 +156,20 @@ function Navbar() {
                   </NavLink>
                 </>
               )}
-
-              <NavLink to="/health" style={linkStyle}>
-                Health
-              </NavLink>
             </>
           )}
         </div>
       </div>
 
-      {/* Right side: Greeting + Logout */}
+      {/* ================= RIGHT SIDE ================= */}
       {token && (
-        <div style={{ display: "flex", alignItems: "center", marginTop: menuOpen ? "10px" : "0" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <span style={{ marginRight: "15px" }}>
             {role === "admin" && "👑 Admin Panel"}
             {role === "staff" && "👷 Staff Portal"}
             {role === "customer" && "🛒 Customer Area"}
           </span>
+
           <button
             onClick={handleLogout}
             style={{
@@ -143,32 +179,12 @@ function Navbar() {
               padding: "5px 10px",
               cursor: "pointer",
               borderRadius: "4px",
-              transition: "all 0.3s ease",
             }}
-            onMouseOver={(e) => (e.target.style.background = "#34495e")}
-            onMouseOut={(e) => (e.target.style.background = "transparent")}
           >
             Logout
           </button>
         </div>
       )}
-
-      {/* Optional: Commented old code preserved */}
-      {/*
-      Old code:
-      <nav
-        style={{
-          padding: "10px 20px",
-          background: "#2c3e50",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        ...
-      </nav>
-      */}
     </nav>
   );
 }
