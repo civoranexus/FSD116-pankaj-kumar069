@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 
+/* ======================================================
+   ORDER SCHEMA (PRODUCTION READY)
+====================================================== */
 const orderSchema = new mongoose.Schema(
   {
     /* =========================
@@ -9,6 +12,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true, // 🔥 faster customer order queries
     },
 
     /* =========================
@@ -24,12 +28,12 @@ const orderSchema = new mongoose.Schema(
         quantity: {
           type: Number,
           required: true,
-          min: 1, // ✅ professional validation
+          min: [1, "Quantity must be at least 1"], // ✅ validation message
         },
         price: {
           type: Number,
-          required: true, // 🔥 added for invoice
-          min: 0,
+          required: true,
+          min: [0, "Price cannot be negative"],
         },
       },
     ],
@@ -40,14 +44,14 @@ const orderSchema = new mongoose.Schema(
     totalAmount: {
       type: Number,
       required: true,
-      min: 0,
+      min: [0, "Total amount cannot be negative"],
     },
 
     /* =========================
        ORDER STATUS
     ========================== */
 
-    // ❌ OLD CODE (kept for learning)
+    // ❌ OLD BASIC STATUS (kept for learning)
     /*
     status: {
       type: String,
@@ -56,7 +60,7 @@ const orderSchema = new mongoose.Schema(
     },
     */
 
-    // ✅ NEW PROFESSIONAL STATUS SYSTEM
+    // ✅ FINAL PROFESSIONAL STATUS SYSTEM
     status: {
       type: String,
       enum: [
@@ -68,14 +72,18 @@ const orderSchema = new mongoose.Schema(
         "Cancelled",   // admin/staff cancelled
       ],
       default: "Pending",
+      index: true, // 🔥 dashboard filters fast
     },
 
     /* =========================
-       STATUS HISTORY (AUDIT)
+       STATUS HISTORY (AUDIT LOG)
     ========================== */
     statusHistory: [
       {
-        status: String,
+        status: {
+          type: String,
+          required: true,
+        },
         changedAt: {
           type: Date,
           default: Date.now,
@@ -108,6 +116,7 @@ const orderSchema = new mongoose.Schema(
     orderNumber: {
       type: String,
       unique: true,
+      index: true, // 🔥 invoice / search fast
     },
 
     placedByRole: {
@@ -131,10 +140,19 @@ const orderSchema = new mongoose.Schema(
 
 /* =========================
    AUTO ORDER NUMBER
+   (Safe & Unique)
 ========================== */
 orderSchema.pre("save", function (next) {
   if (!this.orderNumber) {
-    this.orderNumber = "ORD-" + Date.now();
+    // ❌ OLD (time only – collision risk)
+    // this.orderNumber = "ORD-" + Date.now();
+
+    // ✅ NEW (time + random – safer)
+    this.orderNumber =
+      "ORD-" +
+      Date.now() +
+      "-" +
+      Math.floor(1000 + Math.random() * 9000);
   }
   next();
 });

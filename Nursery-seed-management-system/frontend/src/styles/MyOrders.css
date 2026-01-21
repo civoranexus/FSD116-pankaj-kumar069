@@ -1,0 +1,65 @@
+.my-orders-page {
+  padding: 20px;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.order-card-header,
+.order-card-body {
+  margin-bottom: 12px;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #fff4e5;
+  color: #b35c00;
+}
+
+.status-badge.confirmed {
+  background: #e7f7ff;
+  color: #1b6fd1;
+}
+
+.status-badge.packed {
+  background: #f4f4f4;
+  color: #555;
+}
+
+.status-badge.shipped {
+  background: #e6ffed;
+  color: #1a7f3a;
+}
+
+.status-badge.completed {
+  background: #d4f7ff;
+  color: #0b5f8a;
+}
+
+.status-badge.cancelled {
+  background: #ffe6e6;
+  color: #b30000;
+}
+
+.empty-orders {
+  padding: 20px;
+  background: #fff9f2;
+  border: 1px dashed #f1c27d;
+  border-radius: 10px;
+}

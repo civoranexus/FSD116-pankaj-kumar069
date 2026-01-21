@@ -1,13 +1,46 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
+/* =========================
+   COMMON COMPONENTS
+========================= */
 import Navbar from "./components/Navbar";
-import SeedList from "./components/SeedList";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+/* =========================
+   PUBLIC PAGES
+========================= */
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Unauthorized from "./pages/Unauthorized";
+
+/* =========================
+   CUSTOMER PAGES
+========================= */
+import SeedList from "./components/SeedList";
+
+/*
+❌ OLD PLACEHOLDERS (kept for reference)
+const SeedDetails = () => <div>Seed Details Page</div>;
+const Cart = () => <div>Cart Page</div>;
+const MyOrders = () => <div>My Orders Page</div>;
+*/
+
+// ✅ NEW REAL CUSTOMER PAGES
+import MyOrders from "./pages/customer/MyOrders";
+import Cart from "./pages/customer/Cart";
+import Checkout from "./pages/Checkout";
+import SeedDetails from "./components/SeedDetails";
+
+/* =========================
+   ADMIN / STAFF PAGES
+========================= */
 import Orders from "./pages/Orders";
 
 import Admin from "./pages/admin/Admin";
@@ -19,22 +52,16 @@ import Procurement from "./pages/admin/Procurement";
 import Health from "./pages/admin/Health";
 import Staff from "./pages/admin/Staff";
 
-// ✅ Unauthorized Page
-import Unauthorized from "./pages/Unauthorized";
-
-// ---- PLACEHOLDERS ----
-// (Temporary placeholders for pages not created yet)
-const SeedDetails = () => <div>Seed Details Page</div>;
-const Cart = () => <div>Cart Page</div>;
-const MyOrders = () => <div>My Orders Page</div>;
-
 function App() {
   return (
     <Router>
+      {/* Navbar visible on all pages */}
       <Navbar />
 
       <Routes>
-        {/* Public */}
+        {/* ========================
+            PUBLIC ROUTES
+        ========================= */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -42,7 +69,10 @@ function App() {
         {/* Unauthorized */}
         <Route path="/unauthorized" element={<Unauthorized />} />
 
-        {/* Dashboard (ALL logged-in users) */}
+        {/* ========================
+            COMMON DASHBOARD
+            (All logged-in users)
+        ========================= */}
         <Route
           path="/dashboard"
           element={
@@ -52,7 +82,9 @@ function App() {
           }
         />
 
-        {/* Admin + Staff */}
+        {/* ========================
+            ADMIN + STAFF ROUTES
+        ========================= */}
         <Route
           path="/inventory"
           element={
@@ -80,21 +112,23 @@ function App() {
           }
         />
 
-        {/* Admin Only */}
-        <Route
-          path="/suppliers"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <Suppliers />
-            </ProtectedRoute>
-          }
-        />
-
+        {/* ========================
+            ADMIN ONLY ROUTES
+        ========================= */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <Admin />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/suppliers"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Suppliers />
             </ProtectedRoute>
           }
         />
@@ -108,7 +142,9 @@ function App() {
           }
         />
 
-        {/* Staff Only */}
+        {/* ========================
+            STAFF ONLY ROUTES
+        ========================= */}
         <Route
           path="/procurements"
           element={
@@ -127,7 +163,9 @@ function App() {
           }
         />
 
-        {/* Customer Only */}
+        {/* ========================
+            CUSTOMER ONLY ROUTES
+        ========================= */}
         <Route
           path="/seeds"
           element={
@@ -156,6 +194,15 @@ function App() {
         />
 
         <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/my-orders"
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
@@ -164,7 +211,9 @@ function App() {
           }
         />
 
-        {/* Fallback */}
+        {/* ========================
+            FALLBACK ROUTE
+        ========================= */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

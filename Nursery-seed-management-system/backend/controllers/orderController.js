@@ -2,17 +2,26 @@ const Order = require("../models/Order");
 const Inventory = require("../models/Inventory");
 
 /* ======================================================
+   ORDER STATUS CONSTANT (single source of truth)
+====================================================== */
+const ORDER_STATUS = {
+  PENDING: "Pending",
+  CONFIRMED: "Confirmed",
+  PACKED: "Packed",
+  SHIPPED: "Shipped",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+};
+
+/* ======================================================
    PLACE ORDER
    - Customer: only for himself
    - Staff/Admin: can place order for any customer
    - Stock deduction
-   - Status history maintain
+   - Status history maintained
 ====================================================== */
 const placeOrder = async (req, res) => {
   try {
-    // ❌ OLD (unsafe – customer id spoof ho sakta tha)
-    // let customerId = req.body.customer;
-
     let customerId;
 
     if (req.user.role === "customer") {
@@ -28,14 +37,14 @@ const placeOrder = async (req, res) => {
 
     const { items } = req.body;
 
-    if (!items || items.length === 0) {
-      return res.status(400).json({ message: "Order items required" });
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Order items are required" });
     }
 
     let totalAmount = 0;
     const processedItems = [];
 
-    for (let item of items) {
+    for (const item of items) {
       const product = await Inventory.findById(item.product);
 
       if (!product) {
@@ -63,11 +72,11 @@ const placeOrder = async (req, res) => {
       processedItems.push({
         product: product._id,
         quantity: item.quantity,
-        price: product.price, // 🔥 future invoice ke liye
+        price: product.price, // invoice & history ke liye
       });
     }
 
-    /* ❌ OLD SIMPLE ORDER CREATE */
+    /* ❌ OLD SIMPLE ORDER CREATE (kept for reference) */
     /*
     const order = await Order.create({
       customer: customerId,
@@ -77,16 +86,16 @@ const placeOrder = async (req, res) => {
     });
     */
 
-    /* ✅ NEW PROFESSIONAL ORDER CREATE */
+    /* ✅ PROFESSIONAL ORDER CREATE */
     const order = await Order.create({
       customer: customerId,
       items: processedItems,
       totalAmount,
-      status: "Pending",
+      status: ORDER_STATUS.PENDING,
       placedByRole: req.user.role, // admin / staff / customer
       statusHistory: [
         {
-          status: "Pending",
+          status: ORDER_STATUS.PENDING,
           changedBy: req.user._id,
           changedAt: new Date(),
         },
@@ -109,7 +118,7 @@ const placeOrder = async (req, res) => {
 
 /* ======================================================
    GET ALL ORDERS
-   - Admin/Staff only
+   - Admin/Staff only (route se protect hoga)
 ====================================================== */
 const getOrders = async (req, res) => {
   try {
@@ -176,18 +185,15 @@ const getOrderById = async (req, res) => {
    UPDATE ORDER STATUS
    - Admin / Staff only
    - Status history maintained
+   - ❗ SERVER ERROR FIXED HERE
 ====================================================== */
 const updateOrderStatus = async (req, res) => {
   try {
-    const allowedStatus = [
-      "Pending",
-      "Confirmed",
-      "Packed",
-      "Shipped",
-      "Completed",
-    ];
+    const { status } = req.body;
 
-    if (!allowedStatus.includes(req.body.status)) {
+    const allowedStatus = Object.values(ORDER_STATUS);
+
+    if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Invalid order status" });
     }
 
@@ -197,16 +203,19 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    /* ❌ OLD Direct update */
+    /* ❌ WRONG LOGIC (customer ownership check – removed) */
     /*
-    order.status = req.body.status;
-    await order.save();
+    if (order.customer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
     */
 
-    /* ✅ PROFESSIONAL UPDATE */
-    order.status = req.body.status;
+    /* ✅ CORRECT LOGIC */
+    // Admin / Staff ko customer ownership check nahi chahiye
+
+    order.status = status;
     order.statusHistory.push({
-      status: req.body.status,
+      status,
       changedBy: req.user._id,
       changedAt: new Date(),
     });
@@ -253,4 +262,5 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   deleteOrder,
+  ORDER_STATUS, // future use (routes / frontend)
 };

@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
+// ❌ OLD (REMOVE)  ---> axios
+// import axios from "axios";
+
+// ✅ NEW
+import { useCart } from "../context/CartContext";
+import { placeOrder } from "../services/orderService";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [cart, setCart] = useState([]);
+
+  // ✅ NEW CART CONTEXT
+  const { state, dispatch } = useCart();
+
+  // ❌ OLD (REMOVE)
+  // const [cart, setCart] = useState([]);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(storedCart);
+    // ✅ NEW: Cart from context
+    // setCart(storedCart);
 
     // Pre-fill user info if logged in
     const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -22,7 +34,11 @@ const Checkout = () => {
     }
   }, []);
 
-  const totalPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // ✅ NEW: total from cart context
+  const totalPrice = state.cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   const handlePlaceOrder = async () => {
     if (!address) return alert("Please enter shipping address");
@@ -34,30 +50,24 @@ const Checkout = () => {
       setLoading(true);
 
       // Prepare order items for backend
-      const orderItems = cart.map(item => ({
-        product: item._id,
-        quantity: item.quantity
+      const orderItems = state.cartItems.map((item) => ({
+        product: item.product._id,
+        quantity: item.quantity,
       }));
 
-      // Call backend API
-      const { data } = await axios.post(
-        "http://localhost:5000/api/orders",
-        {
-          customer: JSON.parse(localStorage.getItem("userInfo"))._id, // current logged-in user
-          items: orderItems,
-          totalAmount: totalPrice,
-          shippingAddress: address // optional if backend supports
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // ✅ NEW: Using service (not axios)
+      await placeOrder({
+        items: orderItems,
+        totalAmount: totalPrice,
+        shippingAddress: address,
+      });
 
       alert("✅ Order placed successfully!");
-      localStorage.removeItem("cart"); // empty cart
-      navigate("/my-orders");          // go to MyOrders page
+
+      // ✅ NEW: clear cart via context
+      dispatch({ type: "CLEAR_CART" });
+
+      navigate("/my-orders");
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -66,7 +76,12 @@ const Checkout = () => {
     }
   };
 
-  if (cart.length === 0) return <h2 style={{ padding: "20px" }}>Your cart is empty.</h2>;
+  // ❌ OLD: cart.length
+  // if (cart.length === 0) return <h2 style={{ padding: "20px" }}>Your cart is empty.</h2>;
+
+  // ✅ NEW: cartItems length
+  if (state.cartItems.length === 0)
+    return <h2 style={{ padding: "20px" }}>Your cart is empty.</h2>;
 
   return (
     <div style={{ padding: "20px" }}>
