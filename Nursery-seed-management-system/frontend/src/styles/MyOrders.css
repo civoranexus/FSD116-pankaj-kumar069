@@ -63,3 +63,38 @@
   border: 1px dashed #f1c27d;
   border-radius: 10px;
 }
+.my-orders-page {
+  padding: 20px;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.empty-orders {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.soft-error {
+  background: #fff3cd;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
