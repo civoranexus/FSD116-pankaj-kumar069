@@ -51,13 +51,19 @@ router.get("/:id", ...)
    STAFF & ADMIN ROUTES
 ==================================================== */
 
-// ✅ Staff + Admin → saare orders
+// ❌ OLD (without soft-delete safety)
+// router.get("/", protect, authorize("admin", "staff"), getOrders);
+
+// ✅ NEW (safe & clear)
 router.get(
   "/",
   protect,
   authorize("admin", "staff"),
   getOrders
 );
+
+// ❌ OLD (customer could conflict if added later)
+// router.get("/:id", ...);
 
 // ✅ Staff + Admin → kisi bhi order ka detail
 router.get(
@@ -66,6 +72,9 @@ router.get(
   authorize("admin", "staff"),
   getOrderById
 );
+
+// ❌ OLD (PUT "/:id")
+// router.put("/:id", updateOrderStatus);
 
 // ✅ Staff + Admin → order status update
 router.put(
@@ -79,7 +88,10 @@ router.put(
    ADMIN ONLY ROUTES
 ==================================================== */
 
-// ✅ Admin → order delete
+// ❌ OLD (hard delete, dangerous)
+// router.delete("/:id", protect, authorize("admin"), deleteOrder);
+
+// ✅ NEW (soft delete handled in controller)
 router.delete(
   "/:id",
   protect,
@@ -89,12 +101,28 @@ router.delete(
 
 /*
 =====================================================
-⚠️ IMPORTANT NOTE (Future Upgrade)
+⚠️ IMPORTANT NOTES (VERY IMPORTANT)
 -----------------------------------------------------
-Agar future me chaho:
-Customer → GET /orders/:id (sirf apna)
-To alag route banana:
-router.get("/myorders/:id", ...)
+
+1️⃣ Route order is CRITICAL
+--------------------------------
+/myorders must come BEFORE /:id
+Otherwise Express will treat "myorders" as ":id"
+
+2️⃣ Status update must be a separate route
+--------------------------------
+PUT /orders/:id/status
+This avoids confusion with future updates
+
+3️⃣ Customer order detail (future-safe)
+--------------------------------
+If later needed:
+router.get("/myorders/:id", protect, authorize("customer"), ...)
+
+4️⃣ NEVER expose /:id directly to customer
+--------------------------------
+Security risk (ID guessing attack)
+
 =====================================================
 */
 

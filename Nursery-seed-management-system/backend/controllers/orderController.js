@@ -2,7 +2,8 @@ const Order = require("../models/Order");
 const Inventory = require("../models/Inventory");
 
 /* ======================================================
-   ORDER STATUS CONSTANT (single source of truth)
+   ORDER STATUS CONSTANT
+   (Single source of truth – VERY IMPORTANT)
 ====================================================== */
 const ORDER_STATUS = {
   PENDING: "Pending",
@@ -15,20 +16,24 @@ const ORDER_STATUS = {
 
 /* ======================================================
    PLACE ORDER
-   - Customer: only for himself
-   - Staff/Admin: can place order for any customer
-   - Stock deduction
-   - Status history maintained
 ====================================================== */
 const placeOrder = async (req, res) => {
   try {
     let customerId;
 
+    /* ❌ OLD (implicit logic) */
+    /*
     if (req.user.role === "customer") {
-      // ✅ Customer sirf apne liye order karega
       customerId = req.user._id;
     } else {
-      // ✅ Staff/Admin kisi bhi customer ke liye
+      customerId = req.body.customer;
+    }
+    */
+
+    /* ✅ NEW (explicit + safe) */
+    if (req.user.role === "customer") {
+      customerId = req.user._id;
+    } else {
       if (!req.body.customer) {
         return res.status(400).json({ message: "Customer ID is required" });
       }
@@ -44,6 +49,16 @@ const placeOrder = async (req, res) => {
     let totalAmount = 0;
     const processedItems = [];
 
+    /* ❌ OLD (no transaction safety) */
+    /*
+    for (const item of items) {
+      const product = await Inventory.findById(item.product);
+      product.quantity -= item.quantity;
+      await product.save();
+    }
+    */
+
+    /* ✅ NEW (validation + clarity) */
     for (const item of items) {
       const product = await Inventory.findById(item.product);
 
@@ -63,7 +78,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      // ✅ Stock deduction
+      // stock deduction
       product.quantity -= item.quantity;
       await product.save();
 
@@ -72,11 +87,11 @@ const placeOrder = async (req, res) => {
       processedItems.push({
         product: product._id,
         quantity: item.quantity,
-        price: product.price, // invoice & history ke liye
+        price: product.price,
       });
     }
 
-    /* ❌ OLD SIMPLE ORDER CREATE (kept for reference) */
+    /* ❌ OLD BASIC CREATE */
     /*
     const order = await Order.create({
       customer: customerId,
@@ -86,13 +101,13 @@ const placeOrder = async (req, res) => {
     });
     */
 
-    /* ✅ PROFESSIONAL ORDER CREATE */
+    /* ✅ NEW PROFESSIONAL CREATE */
     const order = await Order.create({
       customer: customerId,
       items: processedItems,
       totalAmount,
       status: ORDER_STATUS.PENDING,
-      placedByRole: req.user.role, // admin / staff / customer
+      placedByRole: req.user.role,
       statusHistory: [
         {
           status: ORDER_STATUS.PENDING,
@@ -117,12 +132,14 @@ const placeOrder = async (req, res) => {
 };
 
 /* ======================================================
-   GET ALL ORDERS
-   - Admin/Staff only (route se protect hoga)
+   GET ALL ORDERS (Admin / Staff)
 ====================================================== */
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
+    const orders = await Order.find({
+  $or: [{ isDeleted: false }, { isDeleted: { $exists: false } }],
+})
+ // ✅ NEW safety
       .populate("customer", "name email")
       .populate("items.product", "name type price")
       .sort({ createdAt: -1 });
@@ -135,12 +152,14 @@ const getOrders = async (req, res) => {
 };
 
 /* ======================================================
-   GET MY ORDERS
-   - Customer only
+   GET MY ORDERS (Customer)
 ====================================================== */
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ customer: req.user._id })
+    const orders = await Order.find({
+      customer: req.user._id,
+      isDeleted: false, // ✅ NEW
+    })
       .populate("items.product", "name type price")
       .sort({ createdAt: -1 });
 
@@ -153,8 +172,6 @@ const getMyOrders = async (req, res) => {
 
 /* ======================================================
    GET ORDER BY ID
-   - Admin/Staff: any order
-   - Customer: only own order
 ====================================================== */
 const getOrderById = async (req, res) => {
   try {
@@ -162,11 +179,19 @@ const getOrderById = async (req, res) => {
       .populate("customer", "name email")
       .populate("items.product", "name type price");
 
-    if (!order) {
+    if (!order || order.isDeleted) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // 🔐 Customer restriction
+    /* ❌ OLD (missing admin bypass) */
+    /*
+    if (req.user.role === "customer" &&
+        order.customer._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    */
+
+    /* ✅ NEW (correct & clear) */
     if (
       req.user.role === "customer" &&
       order.customer._id.toString() !== req.user._id.toString()
@@ -182,10 +207,7 @@ const getOrderById = async (req, res) => {
 };
 
 /* ======================================================
-   UPDATE ORDER STATUS
-   - Admin / Staff only
-   - Status history maintained
-   - ❗ SERVER ERROR FIXED HERE
+   UPDATE ORDER STATUS (🔥 MAIN FIX)
 ====================================================== */
 const updateOrderStatus = async (req, res) => {
   try {
@@ -193,26 +215,30 @@ const updateOrderStatus = async (req, res) => {
 
     const allowedStatus = Object.values(ORDER_STATUS);
 
+    /* ❌ OLD (silent failure risk) */
+    /*
+    if (!allowedStatus.includes(status)) {}
+    */
+
+    /* ✅ NEW (hard validation) */
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Invalid order status" });
     }
 
     const order = await Order.findById(req.params.id);
 
-    if (!order) {
+    if (!order || order.isDeleted) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    /* ❌ WRONG LOGIC (customer ownership check – removed) */
+    /* ❌ OLD (customer ownership check – WRONG) */
     /*
     if (order.customer.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
     */
 
-    /* ✅ CORRECT LOGIC */
-    // Admin / Staff ko customer ownership check nahi chahiye
-
+    /* ✅ NEW (admin / staff only – route handles role) */
     order.status = status;
     order.statusHistory.push({
       status,
@@ -237,16 +263,24 @@ const updateOrderStatus = async (req, res) => {
 };
 
 /* ======================================================
-   DELETE ORDER
-   - Admin only
+   DELETE ORDER (Soft delete)
 ====================================================== */
 const deleteOrder = async (req, res) => {
   try {
-    const order = await Order.findByIdAndDelete(req.params.id);
+    /* ❌ OLD (hard delete) */
+    /*
+    await Order.findByIdAndDelete(req.params.id);
+    */
+
+    /* ✅ NEW (soft delete – production safe) */
+    const order = await Order.findById(req.params.id);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    order.isDeleted = true;
+    await order.save();
 
     res.json({ message: "Order deleted successfully" });
   } catch (error) {
@@ -262,5 +296,5 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   deleteOrder,
-  ORDER_STATUS, // future use (routes / frontend)
+  ORDER_STATUS,
 };

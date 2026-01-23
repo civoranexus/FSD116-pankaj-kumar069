@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 /* ======================================================
-   ORDER SCHEMA (PRODUCTION READY)
+   ORDER SCHEMA (PRODUCTION READY + BUG FIXED)
 ====================================================== */
 const orderSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true, // 🔥 faster customer order queries
+      index: true,
     },
 
     /* =========================
@@ -28,7 +28,7 @@ const orderSchema = new mongoose.Schema(
         quantity: {
           type: Number,
           required: true,
-          min: [1, "Quantity must be at least 1"], // ✅ validation message
+          min: [1, "Quantity must be at least 1"],
         },
         price: {
           type: Number,
@@ -51,7 +51,7 @@ const orderSchema = new mongoose.Schema(
        ORDER STATUS
     ========================== */
 
-    // ❌ OLD BASIC STATUS (kept for learning)
+    // ❌ OLD BASIC STATUS (learning purpose – DO NOT USE)
     /*
     status: {
       type: String,
@@ -61,6 +61,8 @@ const orderSchema = new mongoose.Schema(
     */
 
     // ✅ FINAL PROFESSIONAL STATUS SYSTEM
+    // 🔥 IMPORTANT FIX:
+    // Frontend MUST send same case-sensitive value
     status: {
       type: String,
       enum: [
@@ -69,10 +71,10 @@ const orderSchema = new mongoose.Schema(
         "Packed",      // packed in nursery
         "Shipped",     // out for delivery
         "Completed",   // delivered
-        "Cancelled",   // admin/staff cancelled
+        "Cancelled",   // cancelled by admin/staff
       ],
       default: "Pending",
-      index: true, // 🔥 dashboard filters fast
+      index: true,
     },
 
     /* =========================
@@ -90,7 +92,7 @@ const orderSchema = new mongoose.Schema(
         },
         changedBy: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "User", // staff/admin
+          ref: "User",
         },
       },
     ],
@@ -116,7 +118,7 @@ const orderSchema = new mongoose.Schema(
     orderNumber: {
       type: String,
       unique: true,
-      index: true, // 🔥 invoice / search fast
+      index: true,
     },
 
     placedByRole: {
@@ -126,7 +128,7 @@ const orderSchema = new mongoose.Schema(
     },
 
     /* =========================
-       SOFT DELETE (PRO LEVEL)
+       SOFT DELETE
     ========================== */
     isDeleted: {
       type: Boolean,
@@ -134,20 +136,19 @@ const orderSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // createdAt, updatedAt
+    timestamps: true,
   }
 );
 
 /* =========================
    AUTO ORDER NUMBER
-   (Safe & Unique)
 ========================== */
 orderSchema.pre("save", function (next) {
   if (!this.orderNumber) {
-    // ❌ OLD (time only – collision risk)
+    // ❌ OLD (collision risk)
     // this.orderNumber = "ORD-" + Date.now();
 
-    // ✅ NEW (time + random – safer)
+    // ✅ SAFE VERSION
     this.orderNumber =
       "ORD-" +
       Date.now() +
@@ -156,5 +157,23 @@ orderSchema.pre("save", function (next) {
   }
   next();
 });
+
+/* ======================================================
+   🔥 NEW: STATUS CHANGE HELPER (IMPORTANT)
+   Ensures:
+   - statusHistory auto update
+   - clean audit trail
+====================================================== */
+orderSchema.methods.updateStatus = function (newStatus, userId) {
+  // ❌ OLD: Direct status change (no history)
+  // this.status = newStatus;
+
+  // ✅ NEW: Safe & auditable status update
+  this.status = newStatus;
+  this.statusHistory.push({
+    status: newStatus,
+    changedBy: userId,
+  });
+};
 
 module.exports = mongoose.model("Order", orderSchema);
