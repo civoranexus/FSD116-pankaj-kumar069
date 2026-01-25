@@ -99,6 +99,10 @@ function Navbar() {
                   <NavLink to="/cart" style={linkStyle}>
                     Cart
                   </NavLink>
+                  <NavLink to="/place-order" style={linkStyle}>
+                  Place Order
+                  </NavLink>
+
 
                   {/* ❌ CUSTOMER KO YEH NAHI DIKHANA */}
                   {/*

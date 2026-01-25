@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import API from "../api";
 
 function Orders() {
+  const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [inventory, setInventory] = useState([]);
@@ -9,36 +12,26 @@ function Orders() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  // Role from localStorage
-  const role = localStorage.getItem("role");
-
-  // Fetch inventory + orders
+  // ALWAYS run hooks
   useEffect(() => {
     const fetchData = async () => {
       try {
         const invRes = await API.get("/inventory");
         setInventory(invRes.data.inventory || invRes.data || []);
 
-        // Customer sees only own orders
-        let ordRes;
-        if (role === "customer") {
-          ordRes = await API.get("/orders/myorders");
-        } else {
-          ordRes = await API.get("/orders");
-        }
-
+        // Staff/Admin -> all orders
+        const ordRes = await API.get("/orders");
         setOrders(ordRes.data.orders || ordRes.data || []);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        setMessage({ type: "error", text: "Failed to load orders/inventory." });
+        setMessage({ type: "error", text: "Failed to load data." });
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [role]);
 
-  // Fetch customers (only for admin/staff)
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
@@ -50,11 +43,17 @@ function Orders() {
         console.error("Error fetching customers:", error);
       }
     };
+
     fetchCustomers();
   }, [role]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const calculateTotal = () => {
+    const product = inventory.find((i) => i._id === form.product);
+    return product ? product.price * Number(form.quantity || 0) : 0;
   };
 
   const handleSubmit = async (e) => {
@@ -64,60 +63,48 @@ function Orders() {
     try {
       const payload = {
         customer:
-          role === "customer"
-            ? localStorage.getItem("userId")
-            : form.customer,
+          role === "customer" ? userId : form.customer,
         items: [{ product: form.product, quantity: Number(form.quantity) }],
       };
 
       const res = await API.post("/orders", payload);
-
       const newOrder = res.data.order || res.data;
-      setOrders([...orders, newOrder]);
 
+      setOrders((prev) => [...prev, newOrder]);
       setForm({ customer: "", product: "", quantity: "" });
+
       setMessage({ type: "success", text: "Order placed successfully!" });
     } catch (error) {
-      console.error("Error placing order:", error.response?.data || error.message);
       setMessage({
         type: "error",
-        text: error.response?.data?.message || "Error placing order.",
+        text: error.response?.data?.message || "Order failed.",
       });
     }
-  };
-
-  const calculateTotal = () => {
-    if (!form.product || !form.quantity) return 0;
-    const selected = inventory?.find((i) => i._id === form.product);
-    return selected ? selected.price * form.quantity : 0;
   };
 
   const updateStatus = async (id, status) => {
     try {
       const res = await API.put(`/orders/${id}/status`, { status });
-      const updatedOrder = res.data.order || res.data;
-      setOrders(orders.map((o) => (o._id === id ? updatedOrder : o)));
-      setMessage({ type: "success", text: "Order status updated!" });
+      const updated = res.data.order || res.data;
+
+      setOrders((prev) => prev.map((o) => (o._id === id ? updated : o)));
+      setMessage({ type: "success", text: "Status updated!" });
     } catch (error) {
-      console.error("Error updating status:", error.response?.data || error.message);
       setMessage({
         type: "error",
-        text: error.response?.data?.message || "Error updating status.",
+        text: error.response?.data?.message || "Status update failed.",
       });
     }
   };
 
-  // Styles
-  const inputStyle = {
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    width: "100%",
-    boxSizing: "border-box",
-  };
-
-  const thStyle = { padding: "10px", borderBottom: "1px solid #ccc", background: "#f0f0f0" };
-  const tdStyle = { padding: "10px", borderBottom: "1px solid #eee", textAlign: "center" };
+  // Customer should NOT access staff/admin page
+  if (role === "customer") {
+    return (
+      <div style={{ textAlign: "center", padding: "40px" }}>
+        ❌ You do not have permission to view this page.
+      </div>
+    );
+  }
 
   const statusColor = (status) => {
     switch (status) {
@@ -130,157 +117,142 @@ function Orders() {
     }
   };
 
+  const inputStyle = {
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    width: "100%",
+  };
+
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", backgroundColor: "#f5f6fa" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Orders Management</h2>
+    <div style={{ padding: "2rem", background: "#f5f6fa" }}>
+      <h2 style={{ textAlign: "center" }}>Orders Management</h2>
 
       {message.text && (
         <p style={{
-          color: message.type === "error" ? "#f44336" : "#4CAF50",
           textAlign: "center",
           fontWeight: "bold",
-          marginBottom: "20px",
-        }}>{message.text}</p>
+          color: message.type === "error" ? "#f44336" : "#4CAF50",
+        }}>
+          {message.text}
+        </p>
       )}
 
-      <form style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "15px",
+      <form onSubmit={handleSubmit} style={{
+        background: "#fff",
         padding: "20px",
-        backgroundColor: "#fff",
         borderRadius: "12px",
-        boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
         marginBottom: "30px",
-      }} onSubmit={handleSubmit}>
+        display: "grid",
+        gap: "15px",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      }}>
+        {/* Customer dropdown for staff/admin */}
+        <select
+          name="customer"
+          value={form.customer}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        >
+          <option value="">Select Customer</option>
+          {customers.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name} ({c.email})
+            </option>
+          ))}
+        </select>
 
-        {/* Customer dropdown only for admin/staff */}
-        {(role === "admin" || role === "staff") && (
-          <select name="customer" value={form.customer} onChange={handleChange} required style={inputStyle}>
-            <option value="">Select Customer</option>
-            {customers?.map((c) => (
-              <option key={c._id} value={c._id}>{c.name} ({c.email})</option>
-            ))}
-          </select>
-        )}
-
-        <select name="product" value={form.product} onChange={handleChange} required style={inputStyle}>
+        <select
+          name="product"
+          value={form.product}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        >
           <option value="">Select Product</option>
-          {inventory?.map((i) => (
+          {inventory.map((i) => (
             <option key={i._id} value={i._id}>
-              {i.name} ({i.type}) — {i.quantity} in stock — ₹{i.price}
+              {i.name} — ₹{i.price} — Stock: {i.quantity}
             </option>
           ))}
         </select>
 
         <input
-          name="quantity"
           type="number"
-          placeholder="Quantity"
+          name="quantity"
           value={form.quantity}
           onChange={handleChange}
-          required
           min="1"
+          placeholder="Quantity"
+          required
           style={inputStyle}
         />
 
-        <p style={{ alignSelf: "center" }}>Total: ₹{calculateTotal()}</p>
+        <p>Total: ₹{calculateTotal()}</p>
 
-        <button type="submit" style={{
-          gridColumn: "1 / -1",
-          padding: "10px",
-          border: "none",
-          borderRadius: "8px",
-          backgroundColor: "#2196F3",
-          color: "#fff",
-          fontWeight: "bold",
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-        }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#1976D2")}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#2196F3")}
-          disabled={
-            role === "customer"
-              ? !form.product || !form.quantity
-              : !form.customer || !form.product || !form.quantity
-          }
+        <button
+          type="submit"
+          style={{
+            gridColumn: "1 / -1",
+            padding: "12px",
+            border: "none",
+            borderRadius: "8px",
+            background: "#2196F3",
+            color: "#fff",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
         >
           Place Order
         </button>
       </form>
 
-      <h3 style={{ marginBottom: "15px" }}>Existing Orders</h3>
-      <div style={{
-        overflowX: "auto",
-        backgroundColor: "#fff",
-        padding: "15px",
-        borderRadius: "12px",
-        boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
-      }}>
-        {loading ? (
-          <p style={{ textAlign: "center" }}>Loading orders...</p>
-        ) : orders.length > 0 ? (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Order ID</th>
-                <th style={thStyle}>Customer</th>
-                <th style={thStyle}>Status</th>
-                <th style={thStyle}>Items</th>
-                <th style={thStyle}>Total (₹)</th>
-                <th style={thStyle}>Actions</th>
+      {loading ? (
+        <p style={{ textAlign: "center" }}>Loading orders...</p>
+      ) : orders.length === 0 ? (
+        <p style={{ textAlign: "center" }}>No orders found.</p>
+      ) : (
+        <table style={{ width: "100%", background: "#fff", borderRadius: "12px" }}>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th>Total</th>
+              <th>Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o._id}>
+                <td>{o._id}</td>
+                <td>{o.customer?.name}</td>
+                <td>
+                  <span style={{
+                    padding: "5px 10px",
+                    borderRadius: "6px",
+                    background: statusColor(o.status),
+                    color: "#fff",
+                  }}>
+                    {o.status}
+                  </span>
+                </td>
+                <td>₹{o.totalAmount}</td>
+                <td>
+                  <select value={o.status} onChange={(e) => updateStatus(o._id, e.target.value)} style={inputStyle}>
+                    <option>Pending</option>
+                    <option>Confirmed</option>
+                    <option>Packed</option>
+                    <option>Shipped</option>
+                    <option>Completed</option>
+                  </select>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {orders?.map((order) => (
-                <tr key={order._id}>
-                  <td style={tdStyle}>{order._id}</td>
-                  <td style={tdStyle}>{order.customer?.name} ({order.customer?.email})</td>
-                  <td style={{ ...tdStyle, color: "#fff", fontWeight: "bold", backgroundColor: statusColor(order.status), borderRadius: "6px" }}>
-                    {order.status}
-                  </td>
-                  <td style={tdStyle}>
-                    <ul style={{ paddingLeft: "10px", textAlign: "left" }}>
-                      {order.items?.map((i, idx) => (
-                        <li key={idx}>
-                          {i.product?.name} ({i.product?.type}) — Qty: {i.quantity} — ₹{i.product?.price}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td style={tdStyle}>{order.totalAmount}</td>
-
-                  {/* Status update only for staff/admin */}
-                  <td style={tdStyle}>
-                    {role === "admin" || role === "staff" ? (
-                      <select value={order.status} onChange={(e) => updateStatus(order._id, e.target.value)} style={inputStyle}>
-                        <option value="Pending">Pending</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Packed">Packed</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                    ) : (
-                      <span>Not allowed</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p style={{ textAlign: "center" }}>No orders found.</p>
-        )}
-      </div>
-
-      {/* -------------------- OLD CODE (kept as comment) -------------------- */}
-      {/*
-      Original form:
-      <form onSubmit={handleSubmit}> ... </form>
-
-      Original table:
-      <table border="1" cellPadding="5"> ... </table>
-      */}
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

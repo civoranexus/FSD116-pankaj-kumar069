@@ -1,47 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 const Cart = () => {
-  const [cart, setCart] = useState([]);
   const navigate = useNavigate();
 
-  // Load cart from localStorage
-  useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(storedCart);
-  }, []);
+  // ✅ Use cart from context
+  const { cart, updateQty, removeFromCart, clearCart } = useCart();
 
-  // Update quantity
-  const handleQuantityChange = (id, newQty) => {
-    if (newQty < 1) return;
-    const updatedCart = cart.map((item) =>
-      item._id === id ? { ...item, quantity: newQty } : item
-    );
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
-  // Remove item
-  const handleRemove = (id) => {
-    const updatedCart = cart.filter((item) => item._id !== id);
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
-  // Total price
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  // Empty cart
   if (cart.length === 0) {
     return (
       <div style={{ padding: "20px" }}>
         <h2>🛒 Your cart is empty</h2>
-        <button onClick={() => navigate("/seeds")}>
-          Go to Seeds
-        </button>
+        <button onClick={() => navigate("/seeds")}>Go to Seeds</button>
       </div>
     );
   }
@@ -62,6 +38,7 @@ const Cart = () => {
         >
           <h3>{item.name}</h3>
           <p>Price: ₹{item.price}</p>
+
           <p>
             Quantity:{" "}
             <input
@@ -69,24 +46,34 @@ const Cart = () => {
               min="1"
               value={item.quantity}
               onChange={(e) =>
-                handleQuantityChange(item._id, Number(e.target.value))
+                updateQty(item._id, Number(e.target.value))
               }
               style={{ width: "60px" }}
             />
           </p>
+
           <p>Subtotal: ₹{item.price * item.quantity}</p>
-          <button onClick={() => handleRemove(item._id)}>❌ Remove</button>
+
+          <button onClick={() => removeFromCart(item._id)}>
+            ❌ Remove
+          </button>
         </div>
       ))}
 
       <h3>Total: ₹{totalPrice}</h3>
 
-      {/* ✅ Proceed to Checkout */}
       <button
         onClick={() => navigate("/checkout")}
         style={{ padding: "10px 15px", marginTop: "10px", cursor: "pointer" }}
       >
         Proceed to Checkout
+      </button>
+
+      <button
+        onClick={() => clearCart()}
+        style={{ padding: "10px 15px", marginTop: "10px", cursor: "pointer", marginLeft: "10px" }}
+      >
+        Clear Cart
       </button>
     </div>
   );

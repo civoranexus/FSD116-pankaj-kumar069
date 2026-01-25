@@ -51,6 +51,7 @@ import Suppliers from "./pages/admin/Suppliers";
 import Procurement from "./pages/admin/Procurement";
 import Health from "./pages/admin/Health";
 import Staff from "./pages/admin/Staff";
+import PlaceOrder from "./pages/PlaceOrder";
 
 function App() {
   return (
@@ -207,6 +208,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/place-order"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <PlaceOrder />
             </ProtectedRoute>
           }
         />

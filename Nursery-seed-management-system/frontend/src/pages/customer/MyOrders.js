@@ -30,6 +30,8 @@ const MyOrders = () => {
         const msg =
           err?.response?.data?.message ||
           "Unable to fetch orders. Please try again later.";
+          console.log(err);
+          
         setError(msg);
       } finally {
         setLoading(false);

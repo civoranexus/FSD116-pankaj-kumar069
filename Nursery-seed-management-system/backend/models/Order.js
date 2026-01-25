@@ -5,9 +5,6 @@ const mongoose = require("mongoose");
 ====================================================== */
 const orderSchema = new mongoose.Schema(
   {
-    /* =========================
-       CUSTOMER INFO
-    ========================== */
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -15,9 +12,6 @@ const orderSchema = new mongoose.Schema(
       index: true,
     },
 
-    /* =========================
-       ORDER ITEMS
-    ========================== */
     items: [
       {
         product: {
@@ -38,48 +32,26 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
-    /* =========================
-       PRICING
-    ========================== */
     totalAmount: {
       type: Number,
       required: true,
       min: [0, "Total amount cannot be negative"],
     },
 
-    /* =========================
-       ORDER STATUS
-    ========================== */
-
-    // ❌ OLD BASIC STATUS (learning purpose – DO NOT USE)
-    /*
-    status: {
-      type: String,
-      enum: ["Pending", "Confirmed", "Packed", "Shipped", "Completed"],
-      default: "Pending",
-    },
-    */
-
-    // ✅ FINAL PROFESSIONAL STATUS SYSTEM
-    // 🔥 IMPORTANT FIX:
-    // Frontend MUST send same case-sensitive value
     status: {
       type: String,
       enum: [
-        "Pending",     // order placed
-        "Confirmed",   // staff/admin confirmed
-        "Packed",      // packed in nursery
-        "Shipped",     // out for delivery
-        "Completed",   // delivered
-        "Cancelled",   // cancelled by admin/staff
+        "Pending",
+        "Confirmed",
+        "Packed",
+        "Shipped",
+        "Completed",
+        "Cancelled",
       ],
       default: "Pending",
       index: true,
     },
 
-    /* =========================
-       STATUS HISTORY (AUDIT LOG)
-    ========================== */
     statusHistory: [
       {
         status: {
@@ -97,9 +69,6 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
-    /* =========================
-       PAYMENT INFO
-    ========================== */
     paymentStatus: {
       type: String,
       enum: ["Pending", "Paid", "Failed", "COD"],
@@ -112,9 +81,6 @@ const orderSchema = new mongoose.Schema(
       default: "COD",
     },
 
-    /* =========================
-       ORDER META INFO
-    ========================== */
     orderNumber: {
       type: String,
       unique: true,
@@ -127,9 +93,6 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    /* =========================
-       SOFT DELETE
-    ========================== */
     isDeleted: {
       type: Boolean,
       default: false,
@@ -143,32 +106,30 @@ const orderSchema = new mongoose.Schema(
 /* =========================
    AUTO ORDER NUMBER
 ========================== */
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", function () {
   if (!this.orderNumber) {
-    // ❌ OLD (collision risk)
-    // this.orderNumber = "ORD-" + Date.now();
-
-    // ✅ SAFE VERSION
     this.orderNumber =
       "ORD-" +
       Date.now() +
       "-" +
       Math.floor(1000 + Math.random() * 9000);
   }
-  next();
+
+  // Add initial status history only once
+  if (this.isNew) {
+    this.statusHistory = [
+      {
+        status: this.status,
+        changedBy: this.customer,
+      },
+    ];
+  }
 });
 
 /* ======================================================
-   🔥 NEW: STATUS CHANGE HELPER (IMPORTANT)
-   Ensures:
-   - statusHistory auto update
-   - clean audit trail
+   🔥 STATUS CHANGE HELPER
 ====================================================== */
 orderSchema.methods.updateStatus = function (newStatus, userId) {
-  // ❌ OLD: Direct status change (no history)
-  // this.status = newStatus;
-
-  // ✅ NEW: Safe & auditable status update
   this.status = newStatus;
   this.statusHistory.push({
     status: newStatus,

@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // -------------------- REGISTER USER --------------------
@@ -7,41 +6,45 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Default role = "customer" if not provided
-    const userRole = role || "customer"; // ← COMMENT: ye ensure karta hai ki role na mile to customer ho
+    // 1️⃣ Validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-    // Check if user already exists
+    // 2️⃣ Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password (security improvement)
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create user
+    // 3️⃣ Create user (NO password hashing here ❗)
     const user = await User.create({
       name,
       email,
-      password: hashedPassword, // ← COMMENT: Original code me bhi hashed password tha
-      role: userRole,           // ← COMMENT: Role set kar diya
+      password, // ✅ plain password, model will hash it
+      role: role || "customer",
     });
 
-    // Generate JWT immediately after registration
+    // 4️⃣ Generate JWT
     const token = jwt.sign(
-      { id: user._id, role: user.role }, // ← COMMENT: role backend response me bhejenge, frontend use karega
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     res.status(201).json({
       message: "User registered successfully",
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
       token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("REGISTER ERROR:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -50,54 +53,58 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
+    // 1️⃣ Validation
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // 2️⃣ Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password); // ← COMMENT: matches with hashed password
+    // 3️⃣ Match password using model method
+    const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Generate JWT with role info
+    // 4️⃣ Generate JWT
     const token = jwt.sign(
-      { id: user._id, role: user.role }, // ← COMMENT: role included for frontend role-based redirect
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    res.json({
+    res.status(200).json({
       message: "Login successful",
       token,
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role }, // ← COMMENT: frontend ko role bhejna
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("LOGIN ERROR:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 // -------------------- GET CURRENT USER --------------------
 const getUser = async (req, res) => {
   try {
-    // req.user.id comes from authMiddleware after verifying JWT
-    const user = await User.findById(req.user.id).select("-password"); // exclude password
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("GET USER ERROR:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 module.exports = { registerUser, loginUser, getUser };
-
-// -------------------- COMMENTS SUMMARY --------------------
-// 1. Role included in JWT and response for frontend redirect
-// 2. Default role = "customer" if role not provided
-// 3. Password hashed before saving
-// 4. getUser method excludes password
-// 5. No original code removed, only security & role-based improvements added

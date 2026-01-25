@@ -1,65 +1,69 @@
 import React, { useState } from "react";
-import { useCart } from "../../context/CartContext";
-import { placeOrder } from "../../services/orderService";
-import Loader from "../../components/common/Loader";
+import API from "../api";
+import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
-const Checkout = () => {
-  const { cartItems, clearCart } = useCart();
-  const [loading, setLoading] = useState(false);
+function Checkout() {
+  const { cart, clearCart } = useCart();
+  const navigate = useNavigate();
+
   const [message, setMessage] = useState("");
 
-  const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  const handlePlaceOrder = async () => {
+  const handleCheckout = async () => {
     try {
-      setLoading(true);
-      setMessage("");
+      const userId = localStorage.getItem("userId");
 
-      const orderData = {
-        items: cartItems,
-        totalAmount,
+      const payload = {
+        customer: userId,
+        items: cart.map((i) => ({
+          product: i._id,
+          quantity: i.quantity,
+          price: i.price,
+        })),
+        totalAmount: totalPrice,
       };
 
-      await placeOrder(orderData);
+      await API.post("/orders", payload);
 
+      setMessage("Order placed successfully!");
       clearCart();
-      setMessage("✅ Order placed successfully!");
-    } catch (error) {
-      setMessage("❌ Unable to place order. Please try again.");
-    } finally {
-      setLoading(false);
+
+      setTimeout(() => {
+        navigate("/my-orders");
+      }, 1000);
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Checkout failed.");
     }
   };
 
-  if (loading) return <Loader />;
-
   return (
-    <div className="checkout-page">
+    <div style={{ padding: "20px" }}>
       <h2>Checkout</h2>
 
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <>
-          <p><b>Total Items:</b> {cartItems.length}</p>
-          <p><b>Total Amount:</b> ₹{totalAmount}</p>
-
-          {/* ❌ Address / Payment future scope */}
-          {/* <AddressForm /> */}
-          {/* <PaymentGateway /> */}
-
-          <button onClick={handlePlaceOrder}>
-            Place Order
-          </button>
-
-          {message && <p>{message}</p>}
-        </>
+      {message && (
+        <p style={{ color: message.includes("success") ? "green" : "red" }}>
+          {message}
+        </p>
       )}
+
+      <div>
+        {cart.map((item) => (
+          <div key={item._id} style={{ marginBottom: "10px" }}>
+            {item.name} x {item.quantity} = ₹{item.price * item.quantity}
+          </div>
+        ))}
+      </div>
+
+      <h3>Total: ₹{totalPrice}</h3>
+
+      <button onClick={handleCheckout}>Place Order</button>
     </div>
   );
-};
+}
 
 export default Checkout;

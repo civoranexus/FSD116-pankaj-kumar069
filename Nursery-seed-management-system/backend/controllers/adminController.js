@@ -1,6 +1,10 @@
+//Admincontroller.js
+
 const User = require("../models/User");
 const Inventory = require("../models/Inventory");
 const Order = require("../models/Order");
+
+
 
 // Get all users
 const getUsers = async (req, res) => {
@@ -22,6 +26,8 @@ const getInventorySummary = async (req, res) => {
     res.status(500).json({ message: "Error fetching inventory summary", error: error.message });
   }
 };
+
+
 
 // Get sales report
 const getSalesReport = async (req, res) => {

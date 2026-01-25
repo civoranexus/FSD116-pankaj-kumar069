@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ❌ OLD (REMOVE)  ---> axios
-// import axios from "axios";
-
-// ✅ NEW
 import { useCart } from "../context/CartContext";
-import { placeOrder } from "../services/orderService";
+import API from "../api";
 
 const Checkout = () => {
   const navigate = useNavigate();
 
-  // ✅ NEW CART CONTEXT
-  const { state, dispatch } = useCart();
-
-  // ❌ OLD (REMOVE)
-  // const [cart, setCart] = useState([]);
+  // ✅ Use cart from context
+  const { cart, clearCart } = useCart();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -23,10 +16,6 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // ✅ NEW: Cart from context
-    // setCart(storedCart);
-
-    // Pre-fill user info if logged in
     const user = JSON.parse(localStorage.getItem("userInfo"));
     if (user) {
       setName(user.name);
@@ -34,8 +23,8 @@ const Checkout = () => {
     }
   }, []);
 
-  // ✅ NEW: total from cart context
-  const totalPrice = state.cartItems.reduce(
+  // total price
+  const totalPrice = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
@@ -50,23 +39,26 @@ const Checkout = () => {
       setLoading(true);
 
       // Prepare order items for backend
-      const orderItems = state.cartItems.map((item) => ({
-        product: item.product._id,
+      const orderItems = cart.map((item) => ({
+        product: item._id,
         quantity: item.quantity,
       }));
 
-      // ✅ NEW: Using service (not axios)
-      await placeOrder({
-        items: orderItems,
-        totalAmount: totalPrice,
-        shippingAddress: address,
-      });
+      await API.post(
+        "/orders",
+        {
+          items: orderItems,
+          totalAmount: totalPrice,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       alert("✅ Order placed successfully!");
-
-      // ✅ NEW: clear cart via context
-      dispatch({ type: "CLEAR_CART" });
-
+      clearCart();
       navigate("/my-orders");
       setLoading(false);
     } catch (err) {
@@ -76,11 +68,7 @@ const Checkout = () => {
     }
   };
 
-  // ❌ OLD: cart.length
-  // if (cart.length === 0) return <h2 style={{ padding: "20px" }}>Your cart is empty.</h2>;
-
-  // ✅ NEW: cartItems length
-  if (state.cartItems.length === 0)
+  if (cart.length === 0)
     return <h2 style={{ padding: "20px" }}>Your cart is empty.</h2>;
 
   return (
@@ -93,15 +81,20 @@ const Checkout = () => {
           Name: <input type="text" value={name} readOnly />
         </label>
       </div>
+
       <div style={{ margin: "10px 0" }}>
         <label>
           Email: <input type="email" value={email} readOnly />
         </label>
       </div>
+
       <div style={{ margin: "10px 0" }}>
         <label>
-          Shipping Address:{" "}
-          <textarea value={address} onChange={(e) => setAddress(e.target.value)} />
+          Shipping Address:
+          <textarea
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
         </label>
       </div>
 

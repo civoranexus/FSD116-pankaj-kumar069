@@ -1,91 +1,56 @@
-import React, { createContext, useContext, useReducer, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-/* =========================
-   CART CONTEXT
-========================= */
-const CartContext = createContext();
+export const CartContext = createContext();
 
-/* =========================
-   INITIAL STATE
-========================= */
-const initialState = {
-  cartItems: [],
-};
-
-/* =========================
-   REDUCER
-========================= */
-const cartReducer = (state, action) => {
-  switch (action.type) {
-    case "ADD_TO_CART":
-      const existItem = state.cartItems.find(
-        (item) => item.product._id === action.payload.product._id
-      );
-
-      if (existItem) {
-        return {
-          ...state,
-          cartItems: state.cartItems.map((item) =>
-            item.product._id === existItem.product._id
-              ? action.payload
-              : item
-          ),
-        };
-      }
-
-      return {
-        ...state,
-        cartItems: [...state.cartItems, action.payload],
-      };
-
-    case "REMOVE_FROM_CART":
-      return {
-        ...state,
-        cartItems: state.cartItems.filter(
-          (item) => item.product._id !== action.payload
-        ),
-      };
-
-    case "CLEAR_CART":
-      return initialState;
-
-    default:
-      return state;
-  }
-};
-
-/* =========================
-   PROVIDER
-========================= */
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, initialState, (init) => {
-    // ✅ Load from localStorage (Professional)
-    const localData = localStorage.getItem("cart");
-    return localData ? JSON.parse(localData) : init;
-  });
+  const [cart, setCart] = useState([]);
 
-  // ✅ Save to localStorage on change
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(state));
-  }, [state]);
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(storedCart);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const addToCart = (product) => {
+    const existing = cart.find((c) => c._id === product._id);
+
+    if (existing) {
+      setCart(
+        cart.map((c) =>
+          c._id === product._id ? { ...c, quantity: c.quantity + 1 } : c
+        )
+      );
+    } else {
+      setCart([...cart, { ...product, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (id) => {
+    setCart(cart.filter((c) => c._id !== id));
+  };
+
+  const updateQty = (id, qty) => {
+    if (qty < 1) return;
+    setCart(cart.map((c) => (c._id === id ? { ...c, quantity: qty } : c)));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
 
   return (
-    <CartContext.Provider value={{ state, dispatch }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, removeFromCart, updateQty, clearCart }}
+    >
       {children}
     </CartContext.Provider>
   );
 };
 
-/* =========================
-   HOOK (SAFE)
-========================= */
+// ✅ NEW: Custom hook
 export const useCart = () => {
-  const context = useContext(CartContext);
-
-  // 🔥 IMPORTANT: Error if not inside Provider
-  if (!context) {
-    throw new Error("useCart must be used within CartProvider");
-  }
-
-  return context;
+  return useContext(CartContext);
 };
