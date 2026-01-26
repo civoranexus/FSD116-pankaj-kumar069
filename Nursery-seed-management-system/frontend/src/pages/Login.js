@@ -1,16 +1,25 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ redirect after login
+import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
-// ✅ Professional Login Component
+/* =====================================================
+   LOGIN PAGE – PROFESSIONAL UX/UI
+   👉 Same design language as Register
+   👉 Frontend polish only
+===================================================== */
+
 function Login() {
+  const navigate = useNavigate();
+
+  /* ================= STATE ================= */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const navigate = useNavigate();
 
+  /* ================= HANDLER ================= */
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -20,30 +29,27 @@ function Login() {
     try {
       const res = await API.post("/auth/login", { email, password });
 
-      // ✅ Save token
+      /* ================= SAVE AUTH DATA ================= */
       localStorage.setItem("token", res.data.token);
-
-      // ✅ Save role (for role-based UI)
       localStorage.setItem("role", res.data.user.role);
-
-      // ✅ Save user info (optional but useful)
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // ✅ Success message toast
-      setSuccessMsg("Login successful! Redirecting...");
-      setTimeout(() => setSuccessMsg(""), 3000);
+      setSuccessMsg("Login successful. Redirecting...");
 
-      // ✅ Redirect based on role
-      if (res.data.user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (res.data.user.role === "staff") {
-        navigate("/staff/dashboard");
-      } else {
-        navigate("/customer/home");
-      }
+      /* UX: short delay so success FEELS real */
+      setTimeout(() => {
+        if (res.data.user.role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (res.data.user.role === "staff") {
+          navigate("/staff/dashboard");
+        } else {
+          navigate("/customer/home");
+        }
+      }, 1200);
     } catch (error) {
       const message =
-        error.response?.data?.message || "Something went wrong. Please try again.";
+        error.response?.data?.message ||
+        "Invalid credentials. Please try again.";
       setErrorMsg(message);
     } finally {
       setLoading(false);
@@ -51,87 +57,96 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "2rem auto",
-        padding: "2rem",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>Login</h2>
-      <form onSubmit={handleLogin}>
-        {/* ✅ Styled Input */}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{
-            width: "100%",
-            marginBottom: "1rem",
-            padding: "0.5rem",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{
-            width: "100%",
-            marginBottom: "1rem",
-            padding: "0.5rem",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-        />
+    <div className="auth-page">
 
-        {/* ✅ Styled Button with Loader */}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            borderRadius: "4px",
-            border: "none",
-            backgroundColor: "#4CAF50",
-            color: "#fff",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+      {/* ================= CARD ================= */}
+      <div className="auth-card">
 
-      {/* ✅ Error Message */}
-      {errorMsg && <p style={{ color: "red", marginTop: "1rem" }}>{errorMsg}</p>}
+        <h2 className="auth-title">Welcome back</h2>
+        <p className="auth-subtitle">
+          Login to continue managing your nursery
+        </p>
 
-      {/* ✅ Success Message */}
-      {successMsg && <p style={{ color: "green", marginTop: "1rem" }}>{successMsg}</p>}
+        <form onSubmit={handleLogin} className="auth-form">
 
-      {/* ✅ Optional: Commented old code preserved */}
-      {/*
-      Original code:
-      <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <input type="email" ... />
-          <input type="password" ... />
-          <button type="submit">{loading ? "Logging in..." : "Login"}</button>
+          {/* ================= EMAIL ================= */}
+          <div className="input-group">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label>Email Address</label>
+          </div>
+
+          {/* ================= PASSWORD ================= */}
+          <div className="input-group">
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <label>Password</label>
+          </div>
+
+          {/* ================= BUTTON ================= */}
+          <button
+            type="submit"
+            className={`auth-btn ${loading ? "loading" : ""}`}
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
-        {errorMsg && <p style={{ color: "red", marginTop: "1rem" }}>{errorMsg}</p>}
+
+        {/* ================= FEEDBACK ================= */}
+        {errorMsg && <p className="error-text">{errorMsg}</p>}
+        {successMsg && <p className="success-text">{successMsg}</p>}
+
+        {/* ================= FOOT ================= */}
+        <p className="auth-footer">
+          Don’t have an account?{" "}
+          <Link to="/register">Create one</Link>
+        </p>
+      </div>
+
+      {/* =====================================================
+          ❌ OLD VERSION (DO NOT DELETE – FOR LEARNING)
+      ===================================================== */}
+      {/*
+      <div
+        style={{
+          maxWidth: "400px",
+          margin: "2rem auto",
+          padding: "2rem",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+        }}
+      >
+        <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          Login
+        </h2>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+        {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
       </div>
       */}
     </div>

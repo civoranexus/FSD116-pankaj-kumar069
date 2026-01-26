@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "./Navbar";
+import "../styles/Layout.css";
 
 /*
   Nursery Seed Management System - Layout Component
@@ -14,42 +15,17 @@ import Navbar from "./Navbar";
 
 function Layout({ children }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        fontFamily: "'Roboto', sans-serif",
-        backgroundColor: "#f5f6fa",
-      }}
-    >
+    <div className="app-layout">
       {/* Top navigation */}
       <Navbar />
 
       {/* Main content */}
-      <main
-        style={{
-          flex: 1,
-          padding: "20px",
-          maxWidth: "1400px",
-          width: "100%",
-          margin: "0 auto",
-          boxSizing: "border-box",
-        }}
-      >
+      <main className="layout-main">
         {children}
       </main>
 
       {/* Footer */}
-      <footer
-        style={{
-          padding: "15px 20px",
-          backgroundColor: "#2c3e50",
-          color: "#ecf0f1",
-          textAlign: "center",
-          fontSize: "14px",
-        }}
-      >
+      <footer className="layout-footer">
         Nursery Seed Management System &copy; {new Date().getFullYear()} | 
         Designed for professional usability
       </footer>

@@ -1,56 +1,69 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-/* ❌ OLD IMPORT (jab Home.css same folder me tha) */
-/*
-import "./Home.css";
-*/
-
-/* ✅ NEW IMPORT (Home.css ab styles folder me hai) */
+/* =====================================================
+   STYLES
+   ❌ OLD (same folder)
+   import "./Home.css";
+   ✅ NEW (centralized styles folder)
+===================================================== */
 import "../styles/Home.css";
 
 function Home() {
   const navigate = useNavigate();
 
   /* =====================================================
-     FEATURES DATA (Professional pattern)
-     👉 Industry me hardcoded JSX nahi likhte
-     👉 Data se UI generate hota hai
+     UX HOOK
+     👉 Page load pe subtle animation trigger
+     👉 Google, Stripe, Notion sab yahi pattern follow karte
+  ===================================================== */
+  useEffect(() => {
+    document.body.classList.add("page-fade-in");
+
+    return () => {
+      document.body.classList.remove("page-fade-in");
+    };
+  }, []);
+
+  /* =====================================================
+     FEATURES DATA
+     👉 JSX me hardcode nahi
+     👉 Data driven UI = professional frontend
   ===================================================== */
   const features = [
     {
       title: "Inventory Management",
       icon: "📦",
       description:
-        "Track seeds, saplings, plants, and stock levels in real-time to avoid shortages and wastage.",
+        "Track seeds, saplings, plants, and stock levels in real-time.",
       route: "/inventory",
     },
     {
       title: "Supplier & Procurement",
       icon: "🤝",
       description:
-        "Manage suppliers, procurement cycles, and purchase records in one centralized system.",
+        "Manage suppliers, procurement cycles, and purchase records.",
       route: "/suppliers",
     },
     {
       title: "Order Management",
       icon: "🛒",
       description:
-        "Place, monitor, and manage customer orders with complete lifecycle tracking.",
+        "Monitor customer orders with complete lifecycle tracking.",
       route: "/orders",
     },
     {
       title: "Sales & Analytics",
       icon: "📊",
       description:
-        "Analyze sales trends, monthly performance, and revenue insights.",
+        "Visualize revenue, trends, and monthly performance insights.",
       route: "/admin/sales-report",
     },
     {
       title: "Plant Health Monitoring",
       icon: "🌿",
       description:
-        "Record plant health data, treatments, and maintenance history.",
+        "Record plant health, treatments, and maintenance history.",
       route: "/admin/health",
     },
   ];
@@ -59,12 +72,15 @@ function Home() {
     <div className="home">
 
       {/* =====================================================
-          HERO SECTION (FIRST IMPRESSION)
+          HERO SECTION
+          👉 First impression = make or break
       ===================================================== */}
       <section className="hero">
 
-        {/* LEFT CONTENT */}
+        {/* ================= LEFT CONTENT ================= */}
         <div className="hero-content">
+
+          {/* Small trust badge */}
           <span className="hero-badge">
             🌱 Smart Agriculture Platform
           </span>
@@ -75,9 +91,9 @@ function Home() {
           </h1>
 
           <p className="hero-subtitle">
-            An end-to-end digital solution to manage nursery operations,
-            inventory, suppliers, orders, sales analytics, and plant health
-            with efficiency and transparency.
+            A professional digital platform to manage nursery inventory,
+            suppliers, orders, sales analytics, and plant health — all in
+            one centralized system.
           </p>
 
           <div className="hero-buttons">
@@ -91,29 +107,41 @@ function Home() {
           </div>
         </div>
 
-        {/* RIGHT VISUAL */}
+        {/* ================= RIGHT VISUAL ================= */}
         <div className="hero-visual">
-          <div className="placeholder-box">
 
-            {/* ❌ OLD WRONG CODE (for learning) */}
-            {/*
-            <video src="frontend/public/videos" />
-            */}
+          {/* ❌ OLD LEARNING CODE (DO NOT DELETE) */}
+          {/*
+          <video src="frontend/public/videos" />
+          */}
 
-            {/* ✅ CORRECT PROFESSIONAL USAGE */}
-            <video
-              src="/videos/nursery.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
+          {/* ✅ PROFESSIONAL VIDEO USAGE */}
+          <video
+            src="/videos/nursery.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="hero-video"
+          />
+
+          {/* =================================================
+             UX MAGIC ✨
+             👉 Subtle overlay pattern + animated text
+             👉 Background me "alive" feel aata hai
+          ================================================= */}
+          <div className="hero-overlay-pattern">
+            <span>Inventory</span>
+            <span>Seeds</span>
+            <span>Suppliers</span>
+            <span>Growth</span>
+            <span>Analytics</span>
           </div>
         </div>
       </section>
 
       {/* =====================================================
-          TRUST SECTION (WHY THIS SYSTEM)
+          TRUST SECTION
       ===================================================== */}
       <section className="trust-section">
         <div className="trust-grid">
@@ -133,14 +161,14 @@ function Home() {
       </section>
 
       {/* =====================================================
-          FEATURES SECTION (CLICKABLE)
+          FEATURES SECTION
       ===================================================== */}
       <section className="features">
 
         <header className="features-header">
           <h2 className="section-title">Core Features</h2>
           <p className="section-subtitle">
-            Built to support real nursery operations — not just a demo project.
+            Built for real-world nursery operations — not just a demo project.
           </p>
         </header>
 
@@ -164,7 +192,7 @@ function Home() {
       </section>
 
       {/* =====================================================
-          FINAL CALL TO ACTION
+          FINAL CTA
       ===================================================== */}
       <section className="cta-section">
         <h2>Ready to digitize your nursery?</h2>
@@ -182,14 +210,16 @@ function Home() {
           FOOTER
       ===================================================== */}
       <footer className="footer">
-        <p>
-          © 2026 Smart Nursery & Seed Management System
-        </p>
-        <span>
-          Designed & Developed by Pankaj Kumar
-        </span>
-      </footer>
+        <p>© 2026 Smart Nursery & Seed Management System</p>
 
+        {/* ❌ OPTIONAL (remove if not needed later) */}
+        {/*
+        <span>Designed & Developed by Pankaj Kumar</span>
+        */}
+
+        {/* ✅ PROFESSIONAL VERSION */}
+        <span>Built with ❤️ for Pankaj Kumar</span>
+      </footer>
     </div>
   );
 }

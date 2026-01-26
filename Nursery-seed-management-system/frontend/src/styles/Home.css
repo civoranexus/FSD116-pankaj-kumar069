@@ -1,22 +1,29 @@
 /* ======================================================
    GLOBAL FOUNDATION (Clean, Lighthouse Friendly)
 ====================================================== */
-.home {
-  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+.home,
+.auth-page {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111827;
   background-color: #ffffff;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-/* utility */
-.section-padding {
-  padding: 90px 20px;
+/* page animation */
+.page-fade-in {
+  animation: fadeInPage 0.6s ease-in-out;
 }
 
-.max-width {
-  max-width: 1200px;
-  margin: auto;
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ======================================================
@@ -70,16 +77,20 @@
   gap: 18px;
 }
 
+/* ======================================================
+   BUTTON SYSTEM (Reusable)
+====================================================== */
 .btn {
   padding: 13px 30px;
   border-radius: 10px;
   font-weight: 600;
   text-decoration: none;
+  border: none;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  will-change: transform;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 /* primary */
@@ -107,7 +118,9 @@
   transform: translateY(-2px);
 }
 
-/* hero visual */
+/* ======================================================
+   HERO VIDEO
+====================================================== */
 .hero-visual video {
   width: 100%;
   border-radius: 18px;
@@ -115,8 +128,33 @@
   background: #000;
 }
 
+/* subtle animated overlay text */
+.hero-overlay-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-overlay-pattern span {
+  position: absolute;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.35);
+  animation: floatText 10s linear infinite;
+}
+
+@keyframes floatText {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(-120px);
+    opacity: 1;
+  }
+}
+
 /* ======================================================
-   TRUST / METRICS SECTION
+   TRUST SECTION
 ====================================================== */
 .trust-section {
   background: #f9fafb;
@@ -145,7 +183,7 @@
 }
 
 /* ======================================================
-   FEATURES – CARD BASED PROFESSIONAL LAYOUT
+   FEATURES
 ====================================================== */
 .features {
   padding: 100px 20px;
@@ -154,7 +192,6 @@
 
 .section-title {
   font-size: 38px;
-  letter-spacing: -0.4px;
   margin-bottom: 12px;
 }
 
@@ -164,7 +201,6 @@
   margin: 0 auto 60px;
 }
 
-/* grid */
 .feature-grid {
   max-width: 1200px;
   margin: auto;
@@ -173,15 +209,13 @@
   gap: 30px;
 }
 
-/* card */
 .card {
   background: #ffffff;
-  padding: 32px 30px;
+  padding: 32px;
   border-radius: 18px;
   text-align: left;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .card:hover {
@@ -189,35 +223,120 @@
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
 }
 
-.card h3 {
-  font-size: 19px;
-  margin-bottom: 10px;
-}
-
-.card p {
-  color: #6b7280;
-  font-size: 15px;
-}
-
 /* ======================================================
-   CTA – STRONG ENDING
+   AUTH PAGES (REGISTER + LOGIN)
 ====================================================== */
-.cta-section {
-  background: linear-gradient(135deg, #15803d, #14532d);
-  color: #ffffff;
-  padding: 90px 20px;
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0fdf4, #ecfeff);
+}
+
+.auth-card {
+  background: #ffffff;
+  padding: 42px 38px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+.auth-title {
+  font-size: 28px;
+  margin-bottom: 6px;
   text-align: center;
 }
 
-.cta-section h2 {
-  font-size: 36px;
-  margin-bottom: 14px;
+.auth-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 28px;
 }
 
-.cta-section p {
-  color: #dcfce7;
-  margin-bottom: 32px;
-  font-size: 17px;
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* floating inputs */
+.input-group {
+  position: relative;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 14px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #6b7280;
+  background: #ffffff;
+  padding: 0 6px;
+  transition: 0.2s ease;
+  pointer-events: none;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label,
+.input-group select:focus + label {
+  top: -8px;
+  font-size: 11px;
+  color: #15803d;
+}
+
+/* auth button */
+.auth-btn {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #15803d, #166534);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  margin-top: 18px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-footer a {
+  color: #15803d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.success-text {
+  color: #15803d;
+  font-size: 13px;
+  margin-top: 10px;
 }
 
 /* ======================================================
@@ -241,13 +360,311 @@
     padding: 80px 20px 100px;
   }
 
-  .hero-subtitle {
-    margin-left: auto;
-    margin-right: auto;
+  .hero-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* ======================================================
+   ❌ OLD VERSION (DO NOT DELETE – FOR REFERENCE)
+====================================================== */
+/*
+.hero {
+  padding: 90px 20px;
+}
+*/
+/* ======================================================
+   GLOBAL FOUNDATION (PRO PRODUCT BASE)
+====================================================== */
+.home,
+.auth-page {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #0f172a;
+  background:
+    radial-gradient(circle at top left, #dcfce7 0%, transparent 40%),
+    radial-gradient(circle at bottom right, #ecfeff 0%, transparent 45%),
+    #ffffff;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* subtle noise texture (premium feel) */
+.home::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Ccircle cx='1' cy='1' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* page animation */
+.page-fade-in {
+  animation: fadeInPage 0.7s ease;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ======================================================
+   HERO SECTION – STRONG VISUAL START
+====================================================== */
+.hero {
+  max-width: 1200px;
+  margin: auto;
+  padding: 120px 20px 140px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+}
+
+/* glow behind hero */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle at 30% 30%, rgba(21,128,61,0.18), transparent 60%);
+  z-index: -1;
+}
+
+/* badge */
+.hero-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #dcfce7, #ecfdf3);
+  color: #166534;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+
+/* heading */
+.hero-title {
+  font-size: 52px;
+  line-height: 1.12;
+  margin-bottom: 24px;
+  letter-spacing: -0.6px;
+}
+
+.hero-title span {
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* subtitle */
+.hero-subtitle {
+  font-size: 19px;
+  color: #475569;
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+/* buttons */
+.hero-buttons {
+  display: flex;
+  gap: 18px;
+}
+
+/* ======================================================
+   BUTTON SYSTEM (MICRO INTERACTIONS)
+====================================================== */
+.btn {
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #15803d, #166534);
+  color: #ffffff;
+  box-shadow: 0 14px 30px rgba(21, 128, 61, 0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.btn-secondary:hover {
+  background: #15803d;
+  color: #ffffff;
+}
+
+/* ======================================================
+   HERO VIDEO (FOCUS POINT)
+====================================================== */
+.hero-visual video {
+  width: 100%;
+  border-radius: 22px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.25);
+  background: #000;
+}
+
+/* ======================================================
+   TRUST SECTION (SEPARATION FEEL)
+====================================================== */
+.trust-section {
+  padding: 90px 20px;
+  background:
+    linear-gradient(to bottom, transparent, #f8fafc 30%, #f8fafc);
+}
+
+.trust-grid {
+  max-width: 1000px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+  text-align: center;
+}
+
+.trust-grid h3 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.trust-grid p {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ======================================================
+   FEATURES (DEPTH & CONTRAST)
+====================================================== */
+.features {
+  padding: 120px 20px;
+  background:
+    radial-gradient(circle at top right, #dcfce7 0%, transparent 40%);
+  text-align: center;
+}
+
+.section-title {
+  font-size: 40px;
+  margin-bottom: 14px;
+}
+
+.section-subtitle {
+  color: #64748b;
+  max-width: 640px;
+  margin: 0 auto 70px;
+}
+
+.feature-grid {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 34px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 34px;
+  border-radius: 20px;
+  text-align: left;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+}
+
+/* ======================================================
+   🔥 PREMIUM CTA (REDESIGNED – NOT BORING)
+====================================================== */
+.cta-section {
+  padding: 110px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.cta-box {
+  max-width: 900px;
+  width: 100%;
+  padding: 70px 60px;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(21,128,61,0.9), rgba(22,163,74,0.9));
+  color: #ffffff;
+  text-align: center;
+  box-shadow: 0 40px 90px rgba(21, 128, 61, 0.45);
+}
+
+.cta-box h2 {
+  font-size: 42px;
+  margin-bottom: 18px;
+}
+
+.cta-box p {
+  font-size: 18px;
+  color: #dcfce7;
+  margin-bottom: 36px;
+}
+
+/* ======================================================
+   FOOTER
+====================================================== */
+.footer {
+  background: #f8fafc;
+  padding: 36px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 90px 20px 110px;
   }
 
   .hero-buttons {
     justify-content: center;
     flex-wrap: wrap;
   }
+
+  .cta-box {
+    padding: 50px 26px;
+  }
 }
+
+/* ======================================================
+   ❌ OLD SIMPLE BACKGROUND (REFERENCE – DO NOT DELETE)
+====================================================== */
+/*
+.home {
+  background-color: #ffffff;
+}
+*/

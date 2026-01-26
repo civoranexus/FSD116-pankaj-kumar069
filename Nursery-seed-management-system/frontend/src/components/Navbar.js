@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import "../styles/Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -16,146 +17,95 @@ function Navbar() {
     navigate("/login");
   };
 
-  const linkStyle = ({ isActive }) => ({
-    margin: "0 10px",
-    color: "white",
-    textDecoration: isActive ? "underline" : "none",
-    fontWeight: isActive ? "bold" : "normal",
-  });
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <nav
-      style={{
-        padding: "10px 20px",
-        background: "#2c3e50",
-        color: "white",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-      }}
-    >
+    <nav className="navbar">
       {/* ================= LEFT SIDE ================= */}
-      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ fontWeight: "bold", fontSize: "20px", marginRight: "20px" }}>
+      <div className="navbar-left">
+        <div className="navbar-brand" onClick={() => navigate("/")}>
+          <span className="brand-dot" />
           Nursery Seed System
         </div>
 
-        {/* 🍔 Hamburger button (future responsive use) */}
+        {/* Hamburger */}
         <button
+          className="navbar-hamburger"
           onClick={() => setMenuOpen(!menuOpen)}
-          style={{
-            display: "none",
-            background: "transparent",
-            border: "1px solid white",
-            color: "white",
-            padding: "5px 10px",
-            cursor: "pointer",
-            borderRadius: "4px",
-            fontSize: "18px",
-          }}
         >
           ☰
         </button>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: menuOpen ? "column" : "row",
-            alignItems: menuOpen ? "flex-start" : "center",
-          }}
-        >
-          {/* 🏠 Common Home */}
-          <NavLink to="/" style={linkStyle}>
+        <div className={`navbar-links ${menuOpen ? "open" : ""}`}>
+          <NavLink to="/" className="nav-link" onClick={closeMenu}>
             Home
           </NavLink>
 
-          {/* ================= NOT LOGGED IN ================= */}
           {!token && (
             <>
-              <NavLink to="/login" style={linkStyle}>
+              <NavLink to="/login" className="nav-link" onClick={closeMenu}>
                 Login
               </NavLink>
-              <NavLink to="/register" style={linkStyle}>
+              <NavLink to="/register" className="nav-link" onClick={closeMenu}>
                 Register
               </NavLink>
             </>
           )}
 
-          {/* ================= LOGGED IN ================= */}
           {token && (
             <>
-              {/* Dashboard sab ke liye */}
-              <NavLink to="/dashboard" style={linkStyle}>
+              <NavLink to="/dashboard" className="nav-link" onClick={closeMenu}>
                 Dashboard
               </NavLink>
 
-              {/* ================= CUSTOMER LINKS ================= */}
               {role === "customer" && (
                 <>
-                  <NavLink to="/my-orders" style={linkStyle}>
+                  <NavLink to="/my-orders" className="nav-link" onClick={closeMenu}>
                     My Orders
                   </NavLink>
-                  <NavLink to="/cart" style={linkStyle}>
+                  <NavLink to="/cart" className="nav-link" onClick={closeMenu}>
                     Cart
                   </NavLink>
-                  <NavLink to="/place-order" style={linkStyle}>
-                  Place Order
+                  <NavLink to="/place-order" className="nav-link" onClick={closeMenu}>
+                    Place Order
                   </NavLink>
-
-
-                  {/* ❌ CUSTOMER KO YEH NAHI DIKHANA */}
-                  {/*
-                  <NavLink to="/inventory" style={linkStyle}>
-                    Inventory
-                  </NavLink>
-                  <NavLink to="/orders" style={linkStyle}>
-                    Orders
-                  </NavLink>
-                  <NavLink to="/health" style={linkStyle}>
-                    Health
-                  </NavLink>
-                  */}
                 </>
               )}
 
-              {/* ================= ADMIN / STAFF LINKS ================= */}
               {(role === "admin" || role === "staff") && (
                 <>
-                  <NavLink to="/inventory" style={linkStyle}>
+                  <NavLink to="/inventory" className="nav-link" onClick={closeMenu}>
                     Inventory
                   </NavLink>
-                  <NavLink to="/orders" style={linkStyle}>
+                  <NavLink to="/orders" className="nav-link" onClick={closeMenu}>
                     Orders
                   </NavLink>
-                  <NavLink to="/health" style={linkStyle}>
+                  <NavLink to="/health" className="nav-link" onClick={closeMenu}>
                     Health
                   </NavLink>
                 </>
               )}
 
-              {/* ================= ADMIN ONLY ================= */}
               {role === "admin" && (
                 <>
-                  <NavLink to="/suppliers" style={linkStyle}>
+                  <NavLink to="/suppliers" className="nav-link" onClick={closeMenu}>
                     Suppliers
                   </NavLink>
-                  <NavLink to="/admin" style={linkStyle}>
+                  <NavLink to="/admin" className="nav-link" onClick={closeMenu}>
                     Admin
                   </NavLink>
-                  <NavLink to="/sales-report" style={linkStyle}>
+                  <NavLink to="/sales-report" className="nav-link" onClick={closeMenu}>
                     Sales Report
                   </NavLink>
                 </>
               )}
 
-              {/* ================= STAFF ONLY ================= */}
               {role === "staff" && (
                 <>
-                  <NavLink to="/procurements" style={linkStyle}>
+                  <NavLink to="/procurements" className="nav-link" onClick={closeMenu}>
                     Procurement
                   </NavLink>
-                  <NavLink to="/staff" style={linkStyle}>
+                  <NavLink to="/staff" className="nav-link" onClick={closeMenu}>
                     Staff Dashboard
                   </NavLink>
                 </>
@@ -167,28 +117,35 @@ function Navbar() {
 
       {/* ================= RIGHT SIDE ================= */}
       {token && (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ marginRight: "15px" }}>
-            {role === "admin" && "👑 Admin Panel"}
-            {role === "staff" && "👷 Staff Portal"}
-            {role === "customer" && "🛒 Customer Area"}
+        <div className="navbar-right">
+          <span className="role-badge">
+            {role === "admin" && "👑 Admin"}
+            {role === "staff" && "👷 Staff"}
+            {role === "customer" && "🛒 Customer"}
           </span>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "transparent",
-              border: "1px solid white",
-              color: "white",
-              padding: "5px 10px",
-              cursor: "pointer",
-              borderRadius: "4px",
-            }}
-          >
+          <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
       )}
+
+      {/* ================= OLD INLINE VERSION (REFERENCE) ================= */}
+      {/*
+      <nav
+        style={{
+          padding: "10px 20px",
+          background: "#2c3e50",
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+        }}
+      >
+        ...
+      </nav>
+      */}
     </nav>
   );
 }
