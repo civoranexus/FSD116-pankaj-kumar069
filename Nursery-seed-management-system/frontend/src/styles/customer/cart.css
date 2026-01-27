@@ -1,0 +1,88 @@
+/* =========================
+   CART PAGE STYLES
+========================= */
+
+.cart-page {
+  max-width: 1100px;
+  margin: auto;
+  padding: 24px 16px 120px;
+  background: #f9fafb;
+}
+
+/* Cart Item Card */
+.cart-item {
+  display: flex;
+  gap: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.cart-item img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cart-item-price {
+  margin-top: 6px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Sticky Summary Bar */
+.cart-summary-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  padding: 16px 24px;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.cart-summary-bar span {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.cart-summary-bar button {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.cart-summary-bar button:hover {
+  background: #15803d;
+  transform: scale(1.03);
+}

@@ -78,13 +78,13 @@ const Checkout = () => {
 
       <div style={{ margin: "10px 0" }}>
         <label>
-          Name: <input type="text" value={name} readOnly />
+          Name: <input type="text" name="name" />
         </label>
       </div>
 
       <div style={{ margin: "10px 0" }}>
         <label>
-          Email: <input type="email" value={email} readOnly />
+          Email: <input type="email" name="email"  />
         </label>
       </div>
 

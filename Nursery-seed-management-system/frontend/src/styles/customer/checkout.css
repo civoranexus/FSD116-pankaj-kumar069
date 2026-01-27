@@ -1,0 +1,95 @@
+/* =========================
+   CHECKOUT PAGE STYLES
+========================= */
+
+.checkout-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 32px 16px;
+  background: #f9fafb;
+}
+
+/* Step Indicator */
+.checkout-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.checkout-step {
+  flex: 1;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 3px solid #e5e7eb;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.checkout-step.active {
+  color: #16a34a;
+  border-color: #16a34a;
+  font-weight: 600;
+}
+
+/* Card Container */
+.checkout-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+/* Form */
+.checkout-card label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.checkout-card input,
+.checkout-card textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.checkout-card input:focus,
+.checkout-card textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+}
+
+/* Buttons */
+.checkout-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.checkout-actions button {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.checkout-actions .back-btn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.checkout-actions .next-btn {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.checkout-actions .next-btn:hover {
+  background: #15803d;
+}
