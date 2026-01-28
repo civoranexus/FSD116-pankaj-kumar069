@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
 import "../styles/Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
+  const { cart } = useContext(CartContext);
 
-  // 🔐 Auth data
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role"); // admin | staff | customer
+  const role = localStorage.getItem("role");
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -21,14 +22,12 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      {/* ================= LEFT SIDE ================= */}
       <div className="navbar-left">
         <div className="navbar-brand" onClick={() => navigate("/")}>
           <span className="brand-dot" />
           Nursery Seed System
         </div>
 
-        {/* Hamburger */}
         <button
           className="navbar-hamburger"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -63,9 +62,26 @@ function Navbar() {
                   <NavLink to="/my-orders" className="nav-link" onClick={closeMenu}>
                     My Orders
                   </NavLink>
+
                   <NavLink to="/cart" className="nav-link" onClick={closeMenu}>
                     Cart
+                    {cart.length > 0 && (
+                      <span
+                        style={{
+                          marginLeft: "6px",
+                          background: "#e53935",
+                          color: "#fff",
+                          borderRadius: "12px",
+                          padding: "2px 8px",
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {cart.length}
+                      </span>
+                    )}
                   </NavLink>
+
                   <NavLink to="/place-order" className="nav-link" onClick={closeMenu}>
                     Place Order
                   </NavLink>
@@ -115,7 +131,6 @@ function Navbar() {
         </div>
       </div>
 
-      {/* ================= RIGHT SIDE ================= */}
       {token && (
         <div className="navbar-right">
           <span className="role-badge">
@@ -129,23 +144,6 @@ function Navbar() {
           </button>
         </div>
       )}
-
-      {/* ================= OLD INLINE VERSION (REFERENCE) ================= */}
-      {/*
-      <nav
-        style={{
-          padding: "10px 20px",
-          background: "#2c3e50",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-        }}
-      >
-        ...
-      </nav>
-      */}
     </nav>
   );
 }
