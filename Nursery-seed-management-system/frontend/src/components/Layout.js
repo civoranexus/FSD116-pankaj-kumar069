@@ -3,31 +3,53 @@ import Navbar from "./Navbar";
 import "../styles/Layout.css";
 
 /*
-  Nursery Seed Management System - Layout Component
-
+  =====================================================
+  🌱 Layout Component (Professional / Production Ready)
+  -----------------------------------------------------
   Responsibilities:
-  - Wraps all pages with a consistent Navbar and Footer.
-  - Provides responsive container for main content.
-  - Ensures spacing, typography, and background are uniform.
-  - Supports modular page injection via "children" prop.
-  - Designed with professional UI/UX principles for clarity and hierarchy.
+  - Global page wrapper
+  - Consistent Navbar & Footer
+  - Centralized content spacing
+  - Sticky footer support
+  - Clean UX hierarchy (Header → Main → Footer)
+
+  NOTE:
+  - This component is intentionally simple
+  - Styling responsibility stays in Layout.css
+  =====================================================
 */
 
 function Layout({ children }) {
   return (
     <div className="app-layout">
-      {/* Top navigation */}
-      <Navbar />
+      {/* ================= HEADER ================= */}
+      <header className="layout-header">
+        <Navbar />
+      </header>
 
-      {/* Main content */}
-      <main className="layout-main">
+      {/* ================= MAIN CONTENT ================= */}
+      <main className="layout-main" role="main">
         {children}
       </main>
 
-      {/* Footer */}
+      {/* ================= FOOTER ================= */}
       <footer className="layout-footer">
-        Nursery Seed Management System &copy; {new Date().getFullYear()} | 
+        <div className="footer-inner">
+          <span className="footer-title">
+            Nursery Seed Management System
+          </span>
+
+          <span className="footer-divider">•</span>
+
+          <span className="footer-copy">
+            © {new Date().getFullYear()} All rights reserved
+          </span>
+        </div>
+
+        {/* ❌ OLD (too plain / student-like)
+        Nursery Seed Management System © {new Date().getFullYear()} |
         Designed for professional usability
+        */}
       </footer>
     </div>
   );

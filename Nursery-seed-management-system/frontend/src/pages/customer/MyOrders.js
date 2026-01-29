@@ -50,124 +50,122 @@ const MyOrders = () => {
           </p>
         </div>
       ) : (
-        orders.map((order) => {
-          const status = order.status?.toLowerCase();
+        <div className="orders-grid">
+          {orders.map((order) => {
+            const status = order.status?.toLowerCase();
+            const steps = [
+              { key: "placed", label: "Placed" },
+              { key: "packed", label: "Packed" },
+              { key: "shipped", label: "Shipped" },
+              { key: "delivered", label: "Delivered" },
+            ];
 
-          const steps = [
-            { key: "placed", label: "Placed" },
-            { key: "packed", label: "Packed" },
-            { key: "shipped", label: "Shipped" },
-            { key: "delivered", label: "Delivered" },
-          ];
+            return (
+              <div key={order._id} className="order-card">
+                {/* HEADER */}
+                <div className="order-top">
+                  <div>
+                    <p className="order-id">
+                      Order #{order.orderNumber || order._id.slice(-6)}
+                    </p>
+                    <p className="order-date">
+                      {new Date(order.createdAt).toLocaleString()}
+                    </p>
+                  </div>
 
-          return (
-            <div key={order._id} className="order-card">
-              {/* HEADER */}
-              <div className="order-top">
-                <div>
-                  <p className="order-id">
-                    Order #{order.orderNumber || order._id.slice(-6)}
-                  </p>
-                  <p className="order-date">
+                  <span className={`status-badge ${status}`}>
+                    {order.status}
+                  </span>
+                </div>
+
+                {/* SUMMARY */}
+                <div className="order-summary">
+                  <div className="summary-left">
+                    <p className="summary-title">Customer</p>
+                    <p className="summary-value">{order.customerName || "Guest"}</p>
+                  </div>
+                  <div className="summary-left">
+                    <p className="summary-title">Total Amount</p>
+                    <p className="summary-value">₹{order.totalAmount}</p>
+                  </div>
+                  <div className="summary-right">
+                    <p className="summary-title">Items</p>
+                    <p className="summary-value">{order.items?.length || 0}</p>
+                  </div>
+                </div>
+
+                {/* TRACKER */}
+                <div className="tracker">
+                  {steps.map((step, idx) => {
+                    const isDone =
+                      steps.findIndex((s) => s.key === status) >= idx;
+                    return (
+                      <div
+                        key={idx}
+                        className={`tracker-step ${isDone ? "done" : ""}`}
+                      >
+                        <div className="tracker-dot"></div>
+                        <p>{step.label}</p>
+                        {idx !== steps.length - 1 && (
+                          <div className="tracker-line"></div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* DETAILS TOGGLE */}
+                <button
+                  className="details-btn"
+                  onClick={() =>
+                    setExpandedOrder(
+                      expandedOrder === order._id ? null : order._id
+                    )
+                  }
+                >
+                  {expandedOrder === order._id ? "Hide Details" : "View Details"}
+                </button>
+
+                {/* ITEMS */}
+                {expandedOrder === order._id && (
+                  <div className="order-items">
+                    {order.items.map((item, index) => (
+                      <div key={index} className="order-item">
+                        <div className="item-left">
+                          <div className="item-img">
+                            {/* <img src={item.product.image} alt={item.product?.name} /> */}
+                          </div>
+                          <div>
+                            <p className="item-name">
+                              {item.product?.name || "Product"}
+                            </p>
+                            <p className="item-qty">Qty: {item.quantity}</p>
+                          </div>
+                        </div>
+
+                        <div className="item-price">
+                          ₹{item.price * item.quantity}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* OLD UI (commented) */}
+                {/*
+                <div className="order-header">
+                  <span className="order-id">
+                    Order #{order.orderNumber || order._id}
+                  </span>
+                  <span className="order-date">
                     {new Date(order.createdAt).toLocaleString()}
-                  </p>
+                  </span>
                 </div>
-
-                <span className={`status-badge ${status}`}>
-                  {order.status}
-                </span>
+                */}
               </div>
-
-              {/* SUMMARY */}
-              <div className="order-summary">
-                <div className="summary-left">
-                  <p className="summary-title">Total Amount</p>
-                  <p className="summary-value">₹{order.totalAmount}</p>
-                </div>
-                <div className="summary-right">
-                  <p className="summary-title">Items</p>
-                  <p className="summary-value">
-                    {order.items?.length || 0}
-                  </p>
-                </div>
-              </div>
-
-              {/* TRACKER */}
-              <div className="tracker">
-                {steps.map((step, idx) => {
-                  const isDone =
-                    steps.findIndex((s) => s.key === status) >= idx;
-                  return (
-                    <div
-                      key={idx}
-                      className={`tracker-step ${isDone ? "done" : ""}`}
-                    >
-                      <div className="tracker-dot"></div>
-                      <p>{step.label}</p>
-                      {idx !== steps.length - 1 && (
-                        <div className="tracker-line"></div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* DETAILS TOGGLE */}
-              <button
-                className="details-btn"
-                onClick={() =>
-                  setExpandedOrder(
-                    expandedOrder === order._id ? null : order._id
-                  )
-                }
-              >
-                {expandedOrder === order._id
-                  ? "Hide Details"
-                  : "View Details"}
-              </button>
-
-              {/* ITEMS */}
-              {expandedOrder === order._id && (
-                <div className="order-items">
-                  {order.items.map((item, index) => (
-                    <div key={index} className="order-item">
-                      <div className="item-left">
-                        <div className="item-img">
-                          {/* If you have image in item */}
-                          {/* <img src={item.product.image} alt="item" /> */}
-                        </div>
-                        <div>
-                          <p className="item-name">
-                            {item.product?.name || "Product"}
-                          </p>
-                          <p className="item-qty">
-                            Qty: {item.quantity}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="item-price">
-                        ₹{item.price * item.quantity}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* OLD UI (commented) */}
-              {/*
-              <div className="order-header">
-                <span className="order-id">
-                  Order #{order.orderNumber || order._id}
-                </span>
-                <span className="order-date">
-                  {new Date(order.createdAt).toLocaleString()}
-                </span>
-              </div>
-              */}
-            </div>
-          );
-        })
+            );
+          })}
+        </div>
       )}
     </div>
   );

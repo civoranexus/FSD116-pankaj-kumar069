@@ -1,202 +1,282 @@
-/* ===========================
-   Global Reset & Base Styles
-   =========================== */
-* {
+/* ==================================================
+   🌍 GLOBAL RESET & BASE STYLES
+   ================================================== */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* --------------------------------------------------
+   🎨 CSS VARIABLES (Aligned with theme.js)
+   -------------------------------------------------- */
+:root {
+  --color-primary: #1B9AAA;
+  --color-primary-dark: #16808D;
+  --color-navy: #142C52;
+
+  --color-bg: #F4F7FA;
+  --color-surface: #FFFFFF;
+
+  --color-text-dark: #071426;
+  --color-text-light: #6B7280;
+  --color-border: #E5E7EB;
+
+  --color-success: #22C55E;
+  --color-success-dark: #178740;
+  --color-alert: #EF4444;
+  --color-alert-dark: #EB1414;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.25s ease;
+}
+
+/* --------------------------------------------------
+   🧠 BODY & BASE TYPOGRAPHY
+   -------------------------------------------------- */
 body {
-  margin: 0;
   font-family: 'Inter', sans-serif;
-  background-color: #F4F7FA; /* Background */
-  color: #071426;           /* Text Dark */
+  background-color: var(--color-bg);
+  color: var(--color-text-dark);
+  line-height: 1.6;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ❌ OLD
+body {
+  background-color: #F4F7FA;
+  color: #071426;
+}
+*/
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: 'Roboto Mono', monospace;
 }
 
-/* ===========================
-   Typography
-   =========================== */
-h1, h2, h3, h4 {
+/* --------------------------------------------------
+   🔤 HEADINGS
+   -------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', sans-serif;
-  color: #142C52; /* Navy Core */
-  margin-bottom: 1rem;
+  color: var(--color-navy);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
 }
 
+/* --------------------------------------------------
+   🔗 LINKS
+   -------------------------------------------------- */
 a {
-  color: #1B9AAA; /* Primary Teal */
+  color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color var(--transition-normal);
 }
+
 a:hover {
-  color: #16808D;
+  color: var(--color-primary-dark);
   text-decoration: underline;
 }
 
-/* ===========================
-   Buttons
-   =========================== */
+/* --------------------------------------------------
+   🔘 BUTTONS (Professional Standard)
+   -------------------------------------------------- */
 button {
   font-family: 'Inter', sans-serif;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
   border: none;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color var(--transition-normal),
+              box-shadow var(--transition-normal),
+              transform var(--transition-fast);
 }
 
-button.primary {
-  background-color: #16808D; /* Teal Dark */
-  color: #FFFFFF;
-}
-button.primary:hover {
-  background-color: #1B9AAA;
-}
-
-button.success {
-  background-color: #178740; /* Success Dark */
-  color: #FFFFFF;
-}
-button.success:hover {
-  background-color: #22C55E;
-}
-
-button.alert {
-  background-color: #EB1414; /* Alert Dark */
-  color: #FFFFFF;
-}
-button.alert:hover {
-  background-color: #EF4444;
+button:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 button:disabled {
-  background-color: #bdc3c7;
+  background-color: #CBD5E1;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
-/* ===========================
-   Forms
-   =========================== */
+/* Primary */
+button.primary {
+  background-color: var(--color-primary-dark);
+  color: #FFFFFF;
+}
+button.primary:hover {
+  background-color: var(--color-primary);
+}
+
+/* Success */
+button.success {
+  background-color: var(--color-success-dark);
+  color: #FFFFFF;
+}
+button.success:hover {
+  background-color: var(--color-success);
+}
+
+/* Alert */
+button.alert {
+  background-color: var(--color-alert-dark);
+  color: #FFFFFF;
+}
+button.alert:hover {
+  background-color: var(--color-alert);
+}
+
+/* --------------------------------------------------
+   🧾 FORMS & INPUTS
+   -------------------------------------------------- */
 form {
   margin: 1rem 0;
 }
 
-input, select, textarea {
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #1B9AAA;
-  box-shadow: 0 0 4px rgba(27, 154, 170, 0.4);
-}
-
-/* ===========================
-   Tables
-   =========================== */
-table {
-  border-collapse: collapse;
+input,
+select,
+textarea {
   width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  transition: border var(--transition-normal),
+              box-shadow var(--transition-normal);
+}
+
+textarea {
+  height: auto;
+  padding: 12px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(27,154,170,0.15);
+}
+
+/* --------------------------------------------------
+   📊 TABLES (Admin / Staff Dashboards)
+   -------------------------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 1rem;
-  background: white;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 th, td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
   text-align: left;
+  font-size: 14px;
 }
 
 th {
-  background-color: #142C52;
-  color: white;
+  background-color: var(--color-navy);
+  color: #FFFFFF;
+  font-weight: 600;
 }
 
-tr:nth-child(even) {
-  background-color: #f2f2f2;
+tr:hover {
+  background-color: #F1F5F9;
 }
 
-/* ===========================
-   Navbar
-   =========================== */
+/* --------------------------------------------------
+   🧭 NAVBAR (Base – detailed CSS in Navbar.css)
+   -------------------------------------------------- */
 nav {
-  background-color: #142C52;
-  padding: 12px 20px;
+  height: 64px;
+  background-color: var(--color-navy);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 24px;
 }
+
+/* ❌ OLD
+nav {
+  padding: 12px 20px;
+}
+*/
 
 nav a {
-  color: white;
-  margin: 0 12px;
+  color: #FFFFFF;
   font-weight: 500;
+  margin-left: 16px;
 }
+
 nav a:hover {
-  color: #22C55E;
+  color: var(--color-success);
 }
 
-/* ===========================
-   Cards
-   =========================== */
+/* --------------------------------------------------
+   🃏 CARDS
+   -------------------------------------------------- */
 .card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  flex: 1;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast),
+              box-shadow var(--transition-normal);
 }
+
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-/* ===========================
-   Footer
-   =========================== */
+/* --------------------------------------------------
+   🦶 FOOTER
+   -------------------------------------------------- */
 footer {
-  background: #142C52;
-  color: white;
+  background-color: var(--color-navy);
+  color: #FFFFFF;
   text-align: center;
-  padding: 12px;
-  margin-top: 20px;
+  padding: 16px;
+  margin-top: 32px;
 }
 
-/* ===========================
-   Utility Classes
-   =========================== */
-.text-center {
-  text-align: center;
-}
-.mt-20 {
-  margin-top: 20px;
-}
-.mb-20 {
-  margin-bottom: 20px;
-}
-.p-20 {
-  padding: 20px;
-}
+/* --------------------------------------------------
+   🧰 UTILITY CLASSES
+   -------------------------------------------------- */
+.text-center { text-align: center; }
 
-/* ===========================
-   Animations
-   =========================== */
+.mt-20 { margin-top: 20px; }
+.mb-20 { margin-bottom: 20px; }
+.p-20 { padding: 20px; }
+
+/* --------------------------------------------------
+   ✨ ANIMATIONS (Minimal & Clean)
+   -------------------------------------------------- */
 .fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.4s ease-in-out;
 }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

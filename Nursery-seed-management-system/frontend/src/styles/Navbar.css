@@ -1,188 +1,101 @@
-/* ================= BASE ================= */
+/* =====================================================
+   🧭 NAVBAR – PROFESSIONAL / PRODUCT UI
+   Author intent: Clean, calm, enterprise-level UX
+   ===================================================== */
+
+
+/* =====================================================
+   ❌ OLD / DUPLICATE NAVBAR SYSTEM (KEPT FOR REFERENCE)
+   -----------------------------------------------------
+   Reason removed: 
+   - Two different navbar designs
+   - White + dark clash
+   - Inconsistent class names
+===================================================== */
+/*
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
   background: #ffffff;
-  transition: all 0.3s ease;
 }
 
-.navbar-scrolled {
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-}
-
-.navbar-inner {
-  max-width: 1300px;
-  margin: auto;
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* ================= LOGO ================= */
-.navbar-logo {
-  font-size: 22px;
-  font-weight: 800;
-  text-decoration: none;
-  color: #14532d;
-}
-
-.navbar-logo span {
-  color: #16a34a;
-}
-
-/* ================= LINKS ================= */
 .nav-links {
   display: flex;
-  gap: 22px;
 }
 
-.nav-item {
-  text-decoration: none;
-  color: #374151;
-  font-weight: 500;
-  position: relative;
-  padding-bottom: 4px;
-}
-
-.nav-item::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  left: 0;
-  bottom: 0;
-  background: #16a34a;
-  transition: width 0.3s ease;
-}
-
-.nav-item:hover::after,
-.nav-item.active::after {
-  width: 100%;
-}
-
-.nav-item.active {
-  color: #15803d;
-  font-weight: 600;
-}
-
-/* Highlight button */
-.nav-item.highlight {
-  background: #16a34a;
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 6px;
-}
-
-/* Admin emphasis */
-.nav-item.admin {
-  color: #b91c1c;
-  font-weight: 600;
-}
-
-/* ================= ACTIONS ================= */
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.role-badge {
-  font-size: 13px;
-  background: #ecfdf5;
-  color: #166534;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.logout-btn {
-  border: 1px solid #dc2626;
-  background: transparent;
-  color: #dc2626;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background: #dc2626;
-  color: white;
-}
-
-/* ================= MOBILE ================= */
 .menu-toggle {
   display: none;
-  font-size: 22px;
-  background: none;
-  border: none;
-  cursor: pointer;
 }
+*/
 
-@media (max-width: 900px) {
-  .nav-links {
-    position: absolute;
-    top: 64px;
-    left: 0;
-    right: 0;
-    background: #ffffff;
-    flex-direction: column;
-    padding: 20px;
-    display: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  }
 
-  .nav-links.open {
-    display: flex;
-  }
+/* =====================================================
+   ✅ ACTIVE NAVBAR SYSTEM
+===================================================== */
 
-  .menu-toggle {
-    display: block;
-  }
-}
-
-/* ======================================================
-   NAVBAR - PROFESSIONAL UI
-====================================================== */
+/* ---------------------------
+   BASE NAVBAR
+---------------------------- */
 .navbar {
-  width: 100%;
-  background: linear-gradient(90deg, #0f172a, #1e293b);
-  padding: 14px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 1020;
+
+  width: 100%;
+  height: 64px;
+
+  background: linear-gradient(90deg, #0f172a, #1e293b);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 24px;
 }
 
-/* left group */
+
+/* ---------------------------
+   LEFT SECTION
+---------------------------- */
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 22px;
 }
 
-/* brand */
+
+/* ---------------------------
+   BRAND
+---------------------------- */
 .navbar-brand {
-  font-weight: 800;
-  color: #f8fafc;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
+
+  font-size: 18px;
+  font-weight: 800;
+  color: #f8fafc;
+
+  cursor: pointer;
+  user-select: none;
 }
 
 .brand-dot {
   width: 10px;
   height: 10px;
-  background: #34d399;
   border-radius: 50%;
+
+  background: #34d399;
   box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
 }
 
-/* links */
+.brand-text {
+  letter-spacing: 0.4px;
+}
+
+
+/* ---------------------------
+   NAV LINKS
+---------------------------- */
 .navbar-links {
   display: flex;
   align-items: center;
@@ -190,12 +103,19 @@
 }
 
 .nav-link {
-  color: rgba(241, 245, 249, 0.9);
-  text-decoration: none;
-  font-weight: 600;
-  padding: 8px 10px;
+  position: relative;
+
+  padding: 8px 12px;
   border-radius: 10px;
-  transition: background 0.2s ease, transform 0.2s ease;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(241, 245, 249, 0.9);
+
+  text-decoration: none;
+  transition: background 0.2s ease,
+              transform 0.2s ease,
+              color 0.2s ease;
 }
 
 .nav-link:hover {
@@ -204,66 +124,131 @@
 }
 
 .nav-link.active {
-  background: rgba(52, 211, 153, 0.2);
-  color: #e6fffa;
+  background: rgba(52, 211, 153, 0.18);
+  color: #ecfeff;
 }
 
-/* right group */
+
+/* ---------------------------
+   CART BADGE
+---------------------------- */
+.cart-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cart-badge {
+  min-width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  background: #ef4444;
+  color: #ffffff;
+
+  border-radius: 999px;
+  padding: 0 6px;
+}
+
+
+/* ---------------------------
+   RIGHT SECTION
+---------------------------- */
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
+
+/* ---------------------------
+   ROLE BADGE
+---------------------------- */
 .role-badge {
-  padding: 7px 12px;
+  padding: 6px 12px;
   border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
+
   color: #e2e8f0;
-  font-weight: 700;
-  font-size: 13px;
 }
 
+
+/* ---------------------------
+   LOGOUT BUTTON
+---------------------------- */
 .logout-btn {
   padding: 8px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  font-size: 13px;
+  font-weight: 700;
+
   background: transparent;
   color: #e2e8f0;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  font-weight: 700;
-  transition: background 0.2s ease, transform 0.2s ease;
+
+  transition: background 0.2s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
 }
 
 .logout-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Hamburger - mobile */
+
+/* ---------------------------
+   HAMBURGER (MOBILE)
+---------------------------- */
 .navbar-hamburger {
   display: none;
+
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #e2e8f0;
-  padding: 7px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
+
+  padding: 6px 12px;
   cursor: pointer;
+  font-size: 18px;
 }
 
-/* Responsive */
+
+/* ---------------------------
+   RESPONSIVE (MOBILE)
+---------------------------- */
 @media (max-width: 900px) {
   .navbar-links {
     position: absolute;
     top: 64px;
     left: 0;
     right: 0;
+
     background: #0b1220;
-    flex-direction: column;
     padding: 16px;
+
+    flex-direction: column;
     gap: 12px;
+
     display: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   }
 
   .navbar-links.open {
