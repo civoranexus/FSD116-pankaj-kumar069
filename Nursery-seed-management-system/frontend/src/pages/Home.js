@@ -194,14 +194,15 @@ function Home() {
       {/* =====================================================
           FINAL CTA
       ===================================================== */}
-      <section className="cta-section">
+      <section className="call-to-action">
         <h2>Ready to digitize your nursery?</h2>
+        
         <p>
           Start managing inventory, suppliers, orders, and sales
           with a professional-grade system.
         </p>
-
-        <Link to="/register" className="btn btn-primary large">
+        
+        <Link to="/register" className="btn btn-primary">
           Start Now
         </Link>
       </section>

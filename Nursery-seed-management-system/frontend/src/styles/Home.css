@@ -1,14 +1,14 @@
 /* ======================================================
    GLOBAL FOUNDATION (Clean, Lighthouse Friendly)
 ====================================================== */
-.home,
+/* .home,
 .auth-page {
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111827;
   background-color: #ffffff;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-}
+} */
 
 /* page animation */
 .page-fade-in {
@@ -600,10 +600,14 @@
 /* ======================================================
    🔥 PREMIUM CTA (REDESIGNED – NOT BORING)
 ====================================================== */
-.cta-section {
-  padding: 110px 20px;
-  display: flex;
-  justify-content: center;
+.call-to-action {
+  /* padding: 110px 20px; */
+  justify-items: center;
+}
+
+.call-to-action .btn{
+  margin-left: 50%;
+  transform: translate(-50%);
 }
 
 .cta-box {
