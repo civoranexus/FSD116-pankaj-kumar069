@@ -3,9 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
 /* =====================================================
-   LOGIN PAGE – PROFESSIONAL UX/UI
+   LOGIN PAGE – ENHANCED UX/UI
+   👉 Accessibility + Micro-interactions
    👉 Same design language as Register
-   👉 Frontend polish only
 ===================================================== */
 
 function Login() {
@@ -15,6 +15,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false); // ✅ NEW UX FEATURE
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -22,6 +24,9 @@ function Login() {
   /* ================= HANDLER ================= */
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (loading) return; // ✅ Prevent double submit
+
     setLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
@@ -57,10 +62,10 @@ function Login() {
   };
 
   return (
-    <div className="auth-page">
+    <main className="auth-page" aria-label="Login page">
 
-      {/* ================= CARD ================= */}
-      <div className="auth-card">
+      {/* ================= AUTH CARD ================= */}
+      <section className="auth-card" role="form">
 
         <h2 className="auth-title">Welcome back</h2>
         <p className="auth-subtitle">
@@ -72,45 +77,72 @@ function Login() {
           {/* ================= EMAIL ================= */}
           <div className="input-group">
             <input
+              id="email"
               type="email"
               required
               value={email}
+              autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
+              aria-label="Email address"
             />
-            <label>Email Address</label>
+            <label htmlFor="email">Email Address</label>
           </div>
 
           {/* ================= PASSWORD ================= */}
           <div className="input-group">
             <input
-              type="password"
+              id="password"
+              type={showPassword ? "text" : "password"} // ✅ SHOW/HIDE
               required
               value={password}
+              autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
+              aria-label="Password"
             />
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
+
+            {/* ✅ NEW UX FEATURE */}
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+              role="button"
+              tabIndex={0}
+              aria-label="Toggle password visibility"
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
           </div>
 
-          {/* ================= BUTTON ================= */}
+          {/* ================= SUBMIT ================= */}
           <button
             type="submit"
             className={`auth-btn ${loading ? "loading" : ""}`}
             disabled={loading}
+            aria-busy={loading}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         {/* ================= FEEDBACK ================= */}
-        {errorMsg && <p className="error-text">{errorMsg}</p>}
-        {successMsg && <p className="success-text">{successMsg}</p>}
+        {errorMsg && (
+          <p className="error-text" role="alert">
+            {errorMsg}
+          </p>
+        )}
+
+        {successMsg && (
+          <p className="success-text" role="status">
+            {successMsg}
+          </p>
+        )}
 
         {/* ================= FOOT ================= */}
         <p className="auth-footer">
           Don’t have an account?{" "}
           <Link to="/register">Create one</Link>
         </p>
-      </div>
+      </section>
 
       {/* =====================================================
           ❌ OLD VERSION (DO NOT DELETE – FOR LEARNING)
@@ -149,7 +181,7 @@ function Login() {
         {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
       </div>
       */}
-    </div>
+    </main>
   );
 }
 

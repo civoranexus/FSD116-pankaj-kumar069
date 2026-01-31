@@ -13,9 +13,9 @@ function Home() {
   const navigate = useNavigate();
 
   /* =====================================================
-     UX HOOK
-     👉 Page load pe subtle animation trigger
-     👉 Google, Stripe, Notion sab yahi pattern follow karte
+     UX EFFECT
+     👉 Smooth page fade-in on mount
+     👉 Prevents harsh UI load
   ===================================================== */
   useEffect(() => {
     document.body.classList.add("page-fade-in");
@@ -26,9 +26,8 @@ function Home() {
   }, []);
 
   /* =====================================================
-     FEATURES DATA
-     👉 JSX me hardcode nahi
-     👉 Data driven UI = professional frontend
+     FEATURES DATA (Data-driven UI)
+     👉 Easy to scale / maintain
   ===================================================== */
   const features = [
     {
@@ -69,18 +68,17 @@ function Home() {
   ];
 
   return (
-    <div className="home">
+    <main className="home">
 
       {/* =====================================================
           HERO SECTION
-          👉 First impression = make or break
       ===================================================== */}
-      <section className="hero">
+      <section className="hero" aria-label="Hero section">
 
         {/* ================= LEFT CONTENT ================= */}
         <div className="hero-content">
 
-          {/* Small trust badge */}
+          {/* Trust badge */}
           <span className="hero-badge">
             🌱 Smart Agriculture Platform
           </span>
@@ -97,11 +95,19 @@ function Home() {
           </p>
 
           <div className="hero-buttons">
-            <Link to="/login" className="btn btn-primary">
+            <Link
+              to="/login"
+              className="btn btn-primary"
+              aria-label="Login to platform"
+            >
               Get Started
             </Link>
 
-            <Link to="/register" className="btn btn-secondary">
+            <Link
+              to="/register"
+              className="btn btn-secondary"
+              aria-label="Create new account"
+            >
               Create Account
             </Link>
           </div>
@@ -110,27 +116,25 @@ function Home() {
         {/* ================= RIGHT VISUAL ================= */}
         <div className="hero-visual">
 
-          {/* ❌ OLD LEARNING CODE (DO NOT DELETE) */}
+          {/* ❌ OLD LEARNING CODE (KEEP FOR REFERENCE) */}
           {/*
           <video src="frontend/public/videos" />
           */}
 
-          {/* ✅ PROFESSIONAL VIDEO USAGE */}
+          {/* ✅ Optimized Background Video */}
           <video
             src="/videos/nursery.mp4"
             autoPlay
             loop
             muted
             playsInline
+            preload="metadata"
             className="hero-video"
+            aria-hidden="true"
           />
 
-          {/* =================================================
-             UX MAGIC ✨
-             👉 Subtle overlay pattern + animated text
-             👉 Background me "alive" feel aata hai
-          ================================================= */}
-          <div className="hero-overlay-pattern">
+          {/* Animated overlay keywords */}
+          <div className="hero-overlay-pattern" aria-hidden="true">
             <span>Inventory</span>
             <span>Seeds</span>
             <span>Suppliers</span>
@@ -143,17 +147,19 @@ function Home() {
       {/* =====================================================
           TRUST SECTION
       ===================================================== */}
-      <section className="trust-section">
+      <section className="trust-section" aria-label="Trust indicators">
         <div className="trust-grid">
-          <div>
+          <div className="trust-card">
             <h3>✔ Centralized System</h3>
             <p>All nursery operations managed from one platform.</p>
           </div>
-          <div>
+
+          <div className="trust-card">
             <h3>✔ Role Based Access</h3>
             <p>Admin, Staff & Customer – secure and controlled.</p>
           </div>
-          <div>
+
+          <div className="trust-card">
             <h3>✔ Real-Time Data</h3>
             <p>Live inventory, orders, and sales insights.</p>
           </div>
@@ -163,7 +169,7 @@ function Home() {
       {/* =====================================================
           FEATURES SECTION
       ===================================================== */}
-      <section className="features">
+      <section className="features" aria-label="Core features">
 
         <header className="features-header">
           <h2 className="section-title">Core Features</h2>
@@ -174,10 +180,16 @@ function Home() {
 
         <div className="feature-grid">
           {features.map((feature, index) => (
-            <div
+            <article
               key={index}
               className="card feature-card"
+              tabIndex={0}
+              role="button"
+              aria-label={`Navigate to ${feature.title}`}
               onClick={() => navigate(feature.route)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && navigate(feature.route)
+              }
             >
               <div className="feature-icon">{feature.icon}</div>
               <h3>{feature.title}</h3>
@@ -186,22 +198,22 @@ function Home() {
               <span className="feature-link">
                 Explore →
               </span>
-            </div>
+            </article>
           ))}
         </div>
       </section>
 
       {/* =====================================================
-          FINAL CTA
+          FINAL CALL TO ACTION
       ===================================================== */}
-      <section className="call-to-action">
+      <section className="call-to-action" aria-label="Call to action">
         <h2>Ready to digitize your nursery?</h2>
-        
+
         <p>
           Start managing inventory, suppliers, orders, and sales
           with a professional-grade system.
         </p>
-        
+
         <Link to="/register" className="btn btn-primary">
           Start Now
         </Link>
@@ -213,7 +225,7 @@ function Home() {
       <footer className="footer">
         <p>© 2026 Smart Nursery & Seed Management System</p>
 
-        {/* ❌ OPTIONAL (remove if not needed later) */}
+        {/* ❌ OPTIONAL PERSONAL CREDIT */}
         {/*
         <span>Designed & Developed by Pankaj Kumar</span>
         */}
@@ -221,7 +233,7 @@ function Home() {
         {/* ✅ PROFESSIONAL VERSION */}
         <span>Built with ❤️ for Pankaj Kumar</span>
       </footer>
-    </div>
+    </main>
   );
 }
 

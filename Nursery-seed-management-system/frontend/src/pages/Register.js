@@ -3,10 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
 /* =====================================================
-   REGISTER PAGE – PROFESSIONAL UX/UI
-   👉 Frontend focused
-   👉 Clean structure
-   👉 Interview ready
+   REGISTER PAGE – ENHANCED UX/UI
+   👉 Same design language as Login
+   👉 Accessible, scalable, interview-ready
 ===================================================== */
 
 function Register() {
@@ -18,6 +17,8 @@ function Register() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("customer");
 
+  const [showPassword, setShowPassword] = useState(false); // ✅ UX IMPROVEMENT
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -25,6 +26,9 @@ function Register() {
   /* ================= HANDLER ================= */
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (loading) return; // ✅ Prevent double submit
+
     setLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
@@ -37,9 +41,11 @@ function Register() {
         role,
       });
 
-      setSuccessMsg("Account created successfully. Redirecting to login...");
+      setSuccessMsg(
+        "Account created successfully. Redirecting to login..."
+      );
 
-      // UX: short delay so user FEELS success
+      // UX: short delay so success feels real
       setTimeout(() => navigate("/login"), 1600);
     } catch (error) {
       const message =
@@ -52,10 +58,10 @@ function Register() {
   };
 
   return (
-    <div className="auth-page">
+    <main className="auth-page" aria-label="Register page">
 
-      {/* ================= CARD ================= */}
-      <div className="auth-card">
+      {/* ================= AUTH CARD ================= */}
+      <section className="auth-card" role="form">
 
         <h2 className="auth-title">Create your account</h2>
         <p className="auth-subtitle">
@@ -67,70 +73,107 @@ function Register() {
           {/* ================= NAME ================= */}
           <div className="input-group">
             <input
+              id="name"
               type="text"
               required
               value={name}
+              autoComplete="name"
               onChange={(e) => setName(e.target.value)}
+              aria-label="Full name"
             />
-            <label>Full Name</label>
+            <label htmlFor="name">Full Name</label>
           </div>
 
           {/* ================= EMAIL ================= */}
           <div className="input-group">
             <input
+              id="email"
               type="email"
               required
               value={email}
+              autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
+              aria-label="Email address"
             />
-            <label>Email Address</label>
+            <label htmlFor="email">Email Address</label>
           </div>
 
           {/* ================= PASSWORD ================= */}
           <div className="input-group">
             <input
-              type="password"
+              id="password"
+              type={showPassword ? "text" : "password"} // ✅ SHOW/HIDE
               required
               minLength={6}
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
+              aria-label="Password"
             />
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
+
+            {/* ✅ UX FEATURE */}
+            <span
+              className="toggle-password"
+              role="button"
+              tabIndex={0}
+              aria-label="Toggle password visibility"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+
+            {/* ✅ Light UX Hint */}
+            <small className="input-hint">
+              Minimum 6 characters
+            </small>
           </div>
 
           {/* ================= ROLE ================= */}
           <div className="input-group">
             <select
+              id="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
+              aria-label="User role"
             >
               <option value="customer">Customer</option>
               <option value="staff">Staff</option>
               <option value="admin">Admin</option>
             </select>
-            <label>User Role</label>
+            <label htmlFor="role">User Role</label>
           </div>
 
-          {/* ================= BUTTON ================= */}
+          {/* ================= SUBMIT ================= */}
           <button
             type="submit"
             className={`auth-btn ${loading ? "loading" : ""}`}
             disabled={loading}
+            aria-busy={loading}
           >
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
         {/* ================= FEEDBACK ================= */}
-        {errorMsg && <p className="error-text">{errorMsg}</p>}
-        {successMsg && <p className="success-text">{successMsg}</p>}
+        {errorMsg && (
+          <p className="error-text" role="alert">
+            {errorMsg}
+          </p>
+        )}
+
+        {successMsg && (
+          <p className="success-text" role="status">
+            {successMsg}
+          </p>
+        )}
 
         {/* ================= FOOT ================= */}
         <p className="auth-footer">
           Already have an account?{" "}
           <Link to="/login">Login</Link>
         </p>
-      </div>
+      </section>
 
       {/* =====================================================
           ❌ OLD VERSION (DO NOT DELETE – FOR LEARNING)
@@ -164,7 +207,7 @@ function Register() {
         </form>
       </div>
       */}
-    </div>
+    </main>
   );
 }
 
