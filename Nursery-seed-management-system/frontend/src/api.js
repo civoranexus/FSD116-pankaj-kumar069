@@ -1,40 +1,64 @@
 import axios from "axios";
 
+/*
+=====================================================
+API INSTANCE
+=====================================================
+- Axios instance with dynamic baseURL support
+- Uses REACT_APP_API_URL in production
+- Default fallback: http://localhost:5000/api
+*/
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api", // ✅ dynamic base URL
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
 });
 
-// ===============================
-// Request interceptor: attach token if available
-// ===============================
+/*
+=====================================================
+REQUEST INTERCEPTOR
+=====================================================
+Purpose:
+- Attach JWT token to every outgoing request automatically
+- Required for protected routes (admin/staff/customer)
+*/
 API.interceptors.request.use(
   (req) => {
     const token = localStorage.getItem("token");
 
-    // ✅ If token exists, attach it to Authorization header
+    // Ensure headers object exists
+    req.headers = req.headers || {};
+
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
     }
 
     return req;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    // Request error (network, config issues)
+    return Promise.reject(error);
+  }
 );
 
-// ===============================
-// Response interceptor: handle errors globally
-// ===============================
+/*
+=====================================================
+RESPONSE INTERCEPTOR
+=====================================================
+Purpose:
+- Handle 401 (unauthorized / expired token) globally
+- Clean up token & role from localStorage
+- Redirect to login page
+*/
 API.interceptors.response.use(
-  (res) => res,
+  (res) => res, // Pass successful responses
   (error) => {
-    // If unauthorized, remove token and redirect to login
-    if (error.response?.status === 401) {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid
       localStorage.removeItem("token");
       localStorage.removeItem("role");
 
-      // ⚠️ This is a temporary redirect method.
-      // You can replace this with React Router navigate if you want.
-      alert("Session expired. Please login again.");
+      alert("Session expired or unauthorized. Please login again.");
+
+      // Force redirect to login
       window.location.href = "/login";
     }
 

@@ -26,7 +26,14 @@ Customer → only own data
    CUSTOMER ROUTES
 ==================================================== */
 
-// ✅ Customer / Staff / Admin → place order
+/* ❌ OLD:
+router.post("/", protect, placeOrder); // no role check
+*/
+
+/* ✅ NEW:
+- Any logged-in user (customer / staff / admin) can place order
+- authorize middleware ensures role-based access
+*/
 router.post(
   "/",
   protect,
@@ -34,8 +41,14 @@ router.post(
   placeOrder
 );
 
-// ✅ Customer → own orders
-// 🔥 MUST be before "/:id"
+/* ❌ OLD:
+router.get("/my-orders", protect, getMyOrders); // no role check
+*/
+
+/* ✅ NEW:
+- Only customer can fetch their own orders
+- Must be before dynamic "/:id" route
+*/
 router.get(
   "/my-orders",
   protect,
@@ -47,6 +60,15 @@ router.get(
    STAFF & ADMIN ROUTES
 ==================================================== */
 
+/* ❌ OLD:
+router.get("/", protect, getOrders); // no role check
+*/
+
+/* ✅ NEW:
+- Only admin or staff can fetch all orders
+- Populates customer + items
+- Sorted by creation date
+*/
 router.get(
   "/",
   protect,
@@ -58,6 +80,12 @@ router.get(
    DYNAMIC ROUTES (ALWAYS LAST)
 ==================================================== */
 
+/*
+- Fetch single order by ID
+- Role-based access:
+  - Customer → only own order
+  - Staff / Admin → any order
+*/
 router.get(
   "/:id",
   protect,
@@ -65,6 +93,10 @@ router.get(
   getOrderById
 );
 
+/*
+- Update order status (admin / staff)
+- Route: /api/orders/:id/status
+*/
 router.put(
   "/:id/status",
   protect,
@@ -76,6 +108,10 @@ router.put(
    ADMIN ONLY
 ==================================================== */
 
+/*
+- Soft delete order
+- Only admin allowed
+*/
 router.delete(
   "/:id",
   protect,
@@ -83,4 +119,7 @@ router.delete(
   deleteOrder
 );
 
+/* =====================================================
+   EXPORT ROUTER
+==================================================== */
 module.exports = router;

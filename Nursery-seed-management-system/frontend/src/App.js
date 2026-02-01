@@ -7,10 +7,16 @@ import {
 } from "react-router-dom";
 
 /* =========================
-   COMMON COMPONENTS
+   COMMON / LAYOUT COMPONENTS
 ========================= */
+// ❌ OLD (before structure cleanup)
+// import Navbar from "./components/Navbar";
+// import ProtectedRoute from "./components/ProtectedRoute";
+
+// ✅ NEW (after structure cleanup)
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 
 /* =========================
    PUBLIC PAGES
@@ -21,28 +27,29 @@ import Register from "./pages/Register";
 import Unauthorized from "./pages/Unauthorized";
 
 /* =========================
-   CUSTOMER PAGES
+   CUSTOMER COMPONENTS
 ========================= */
 import SeedList from "./components/SeedList";
-
-/*
-❌ OLD PLACEHOLDERS (kept for reference)
-const SeedDetails = () => <div>Seed Details Page</div>;
-const Cart = () => <div>Cart Page</div>;
-const MyOrders = () => <div>My Orders Page</div>;
-*/
-
-// ✅ NEW REAL CUSTOMER PAGES
-import MyOrders from "./pages/customer/MyOrders";
-import Cart from "./pages/customer/Cart";
-import Checkout from "./pages/Checkout";
 import SeedDetails from "./components/SeedDetails";
 
-/* =========================
-   ADMIN / STAFF PAGES
-========================= */
+/*
+❌ OLD CUSTOMER PAGE IMPORTS (deleted files)
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import MyOrder from "./pages/MyOrder";
+*/
 
+// ✅ NEW CUSTOMER PAGES (role-based folders)
+import Cart from "./pages/customer/Cart";
+import Checkout from "./pages/customer/Checkout";
+import MyOrders from "./pages/customer/MyOrders";
+import PlaceOrder from "./pages/PlaceOrder";
+
+
+/* =========================
+   ADMIN PAGES
+========================= */
 import Admin from "./pages/admin/Admin";
 import Dashboard from "./pages/admin/Dashboard";
 import Inventory from "./pages/admin/Inventory";
@@ -51,12 +58,18 @@ import Suppliers from "./pages/admin/Suppliers";
 import Procurement from "./pages/admin/Procurement";
 import Health from "./pages/admin/Health";
 import Staff from "./pages/admin/Staff";
-import PlaceOrder from "./pages/PlaceOrder";
+import Orders from "./pages/staff/Orders";
+
+/* =========================
+   STAFF PAGES
+========================= */
+
+
 
 function App() {
   return (
     <Router>
-      {/* Navbar visible on all pages */}
+      {/* 🔹 Navbar visible on all pages */}
       <Navbar />
 
       <Routes>
@@ -66,13 +79,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Unauthorized */}
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* ========================
             COMMON DASHBOARD
-            (All logged-in users)
+            (Admin + Staff + Customer)
         ========================= */}
         <Route
           path="/dashboard"
@@ -211,6 +222,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/place-order"
           element={
