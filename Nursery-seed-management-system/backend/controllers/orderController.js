@@ -2,35 +2,33 @@ const Order = require("../models/Order");
 const Inventory = require("../models/Inventory");
 
 /* ======================================================
-   ORDER STATUS CONSTANT
-   (Single source of truth – DO NOT HARD-CODE ELSEWHERE)
+   ORDER STATUS (🔥 MUST MATCH Order MODEL ENUM)
+   - Single source of truth
+   - DO NOT hardcode values elsewhere
 ====================================================== */
-const ORDER_STATUS = {
-  PENDING: "Pending",
-  CONFIRMED: "Confirmed",
-  PACKED: "Packed",
-  SHIPPED: "Shipped",
-  COMPLETED: "Completed",
-  CANCELLED: "Cancelled",
-};
+const ORDER_STATUS = [
+  "placed",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "completed",
+  "cancelled",
+];
 
 /* ======================================================
    PLACE ORDER
+   - Handles both customer & admin/staff placing order
+   - Deducts stock
+   - Creates order with statusHistory
 ====================================================== */
 const placeOrder = async (req, res) => {
   try {
     let customerId;
 
-    /* ❌ OLD LOGIC */
-    /*
-    if (req.user.role === "customer") {
-      customerId = req.user._id;
-    } else {
-      customerId = req.body.customer;
-    }
-    */
-
-    /* ✅ NEW SAFE LOGIC */
+    /* =========================
+       DETERMINE CUSTOMER ID
+    ========================= */
     if (req.user.role === "customer") {
       customerId = req.user._id;
     } else {
@@ -86,21 +84,16 @@ const placeOrder = async (req, res) => {
 
     /* =========================
        CREATE ORDER
+       - Status = placed (matches model)
+       - statusHistory auto-handled by model pre-save
     ========================= */
     const order = await Order.create({
       customer: customerId,
       items: processedItems,
       totalAmount,
-      status: ORDER_STATUS.PENDING,
+      status: "placed", // 🔥 MUST MATCH MODEL ENUM
       placedByRole: req.user.role,
-      statusHistory: [
-        {
-          status: ORDER_STATUS.PENDING,
-          changedBy: req.user._id,
-          changedAt: new Date(),
-        },
-      ],
-      isDeleted: false, // 🔥 VERY IMPORTANT
+      isDeleted: false, // 🔥 IMPORTANT: soft delete flag
     });
 
     const populatedOrder = await Order.findById(order._id)
@@ -119,16 +112,11 @@ const placeOrder = async (req, res) => {
 
 /* ======================================================
    GET ALL ORDERS (ADMIN / STAFF)
+   - Sorted newest first
+   - Populates customer & item info
 ====================================================== */
 const getOrders = async (req, res) => {
   try {
-    /* ❌ OLD SAFETY LOGIC
-    const orders = await Order.find({
-      $or: [{ isDeleted: false }, { isDeleted: { $exists: false } }],
-    });
-    */
-
-    /* ✅ NEW SAFE LOGIC */
     const orders = await Order.find({ isDeleted: false })
       .populate("customer", "name email")
       .populate("items.product", "name type price")
@@ -162,6 +150,7 @@ const getMyOrders = async (req, res) => {
 
 /* ======================================================
    GET ORDER BY ID
+   - Customer can only access their own orders
 ====================================================== */
 const getOrderById = async (req, res) => {
   try {
@@ -189,12 +178,15 @@ const getOrderById = async (req, res) => {
 
 /* ======================================================
    UPDATE ORDER STATUS (ADMIN / STAFF)
+   - Safe: uses orderSchema.methods.updateStatus()
+   - Only allows valid status from ORDER_STATUS enum
 ====================================================== */
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    if (!Object.values(ORDER_STATUS).includes(status)) {
+    // 🔹 Validate status (must match enum in Order model)
+    if (!ORDER_STATUS.includes(status)) {
       return res.status(400).json({ message: "Invalid order status" });
     }
 
@@ -204,14 +196,8 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    order.status = status;
-    order.statusHistory.push({
-      status,
-      changedBy: req.user._id,
-      changedAt: new Date(),
-    });
-
-    await order.save();
+    // 🔹 SAFE async update
+    await order.updateStatus(status, req.user._id);
 
     const populatedOrder = await Order.findById(order._id)
       .populate("customer", "name email")
@@ -248,6 +234,9 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+/* ======================================================
+   EXPORT CONTROLLERS
+====================================================== */
 module.exports = {
   placeOrder,
   getOrders,
@@ -255,5 +244,18 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   deleteOrder,
-  ORDER_STATUS,
 };
+
+/* ======================================================
+   ❌ OLD / UNUSED CODE KEPT FOR REFERENCE
+====================================================== */
+/*
+const OLD_ORDER_STATUS = {
+  PENDING: "Pending",
+  CONFIRMED: "Confirmed",
+  PACKED: "Packed",
+  SHIPPED: "Shipped",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+};
+*/
