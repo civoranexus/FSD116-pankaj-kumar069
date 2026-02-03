@@ -4,11 +4,6 @@ import { useNavigate } from "react-router-dom";
 /* =========================
    API & CONTEXT IMPORTS
 ========================= */
-// ❌ OLD (when Checkout was inside /pages)
-// import API from "../api";
-// import { useCart } from "../context/CartContext";
-
-// ✅ NEW (Checkout moved to /pages/customer)
 import API from "../../api";
 import { useCart } from "../../context/CartContext";
 
@@ -24,11 +19,20 @@ function Checkout() {
   /* =========================
      LOCAL STATES
   ========================= */
-  const [step, setStep] = useState(1); // 1: Address → 2: Payment → 3: Confirm
+  const [step, setStep] = useState(1);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  /* ✅ Address state */
+  const [address, setAddress] = useState("");
+
+  /* ❌ OLD (future use ke liye comment)
+  const paymentMethod = "COD";
+  */
 
   /* =========================
-     CALCULATIONS
+     TOTAL CALCULATION (UI ONLY)
+     ❗ Backend will calculate again
   ========================= */
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -39,32 +43,53 @@ function Checkout() {
      PLACE ORDER HANDLER
   ========================= */
   const handleCheckout = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
+    if (cart.length === 0) {
+      setMessage("Cart is empty");
+      return;
+    }
 
+    if (!address.trim()) {
+      setMessage("Delivery address is required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMessage("");
+
+      /* ❌ OLD (unsafe – frontend user control)
+      const userId = localStorage.getItem("userId");
+      */
+
+      /* ✅ FINAL SAFE PAYLOAD
+         👉 customer = backend JWT se
+         👉 totalAmount = backend calculate karega
+      */
       const payload = {
-        customer: userId,
         items: cart.map((item) => ({
           product: item._id,
           quantity: item.quantity,
-          price: item.price,
+          // ❌ price frontend se mat bhejo (backend ignore karega)
         })),
-        totalAmount: totalPrice,
+        deliveryAddress: address,
+        paymentMethod: "COD",
       };
 
       await API.post("/orders", payload);
 
-      setMessage("Order placed successfully!");
+      setMessage("Order placed successfully ✅");
       clearCart();
 
-      // Redirect after success
-      setTimeout(() => {
-        navigate("/my-orders");
-      }, 1200);
+      // ✅ Direct redirect (no delay confusion)
+      navigate("/my-orders");
     } catch (error) {
+      console.error("Checkout Error:", error);
       setMessage(
-        error?.response?.data?.message || "Checkout failed. Please try again."
+        error?.response?.data?.message ||
+          "Checkout failed. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,12 +113,14 @@ function Checkout() {
       </div>
 
       {/* ======================
-          STATUS MESSAGE
+          MESSAGE
       ====================== */}
       {message && (
         <p
           className={`checkout-message ${
-            message.toLowerCase().includes("success") ? "success" : "error"
+            message.toLowerCase().includes("success")
+              ? "success"
+              : "error"
           }`}
         >
           {message}
@@ -107,12 +134,18 @@ function Checkout() {
         <div className="checkout-card">
           <label>Delivery Address</label>
           <textarea
-            placeholder="Enter your full delivery address"
             rows="4"
+            placeholder="Enter your full delivery address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
 
           <div className="checkout-actions">
-            <button className="next-btn" onClick={() => setStep(2)}>
+            <button
+              className="next-btn"
+              onClick={() => setStep(2)}
+              disabled={!address.trim()}
+            >
               Next
             </button>
           </div>
@@ -145,7 +178,7 @@ function Checkout() {
       )}
 
       {/* ======================
-          STEP 3: CONFIRM ORDER
+          STEP 3: CONFIRM
       ====================== */}
       {step === 3 && (
         <div className="checkout-card">
@@ -156,7 +189,10 @@ function Checkout() {
               <div key={item._id} className="checkout-item-card">
                 <div className="checkout-item-left">
                   <img
-                    src={item.image || "https://via.placeholder.com/80"}
+                    src={
+                      item.image ||
+                      "https://dummyimage.com/80x80/cccccc/000000&text=Item"
+                    }
                     alt={item.name}
                   />
                   <div>
@@ -180,34 +216,24 @@ function Checkout() {
             <button className="back-btn" onClick={() => setStep(2)}>
               Back
             </button>
-            <button className="next-btn" onClick={handleCheckout}>
-              Place Order
+            <button
+              className="next-btn"
+              onClick={handleCheckout}
+              disabled={loading}
+            >
+              {loading ? "Placing Order..." : "Place Order"}
             </button>
           </div>
         </div>
       )}
 
       {/* ======================
-          ❌ OLD BASIC CHECKOUT UI
-          (Kept for reference)
+          ❌ OLD BASIC CHECKOUT
+          (REFERENCE ONLY)
       ====================== */}
       {/*
-      <div style={{ padding: "20px" }}>
+      <div>
         <h2>Checkout</h2>
-        {message && (
-          <p style={{ color: message.includes("success") ? "green" : "red" }}>
-            {message}
-          </p>
-        )}
-        <div>
-          {cart.map((item) => (
-            <div key={item._id}>
-              {item.name} x {item.quantity} = ₹
-              {item.price * item.quantity}
-            </div>
-          ))}
-        </div>
-        <h3>Total: ₹{totalPrice}</h3>
         <button onClick={handleCheckout}>Place Order</button>
       </div>
       */}

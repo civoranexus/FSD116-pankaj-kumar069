@@ -14,10 +14,18 @@ connectDB(); // MongoDB connect
 const app = express();
 
 // -------------------- MIDDLEWARE --------------------
-app.use(cors());          // Frontend requests allow karne ke liye
-app.use(express.json());  // JSON body parsing for POST/PUT requests
+/*
+❌ OLD (not wrong, but unclear order)
+app.use(cors());
+app.use(express.json());
+*/
+
+/* ✅ FINAL (BEST PRACTICE ORDER) */
+app.use(cors());                 // Allow cross-origin requests
+app.use(express.json({ limit: "10mb" })); // JSON body parsing (safe limit)
 
 // -------------------- ROUTES --------------------
+
 // Auth routes: register, login, getUser
 app.use("/api/auth", require("./routes/authRoutes"));
 
@@ -42,37 +50,51 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 // Sales routes
 app.use("/api/sales", require("./routes/salesRoutes"));
 
-// Customer routes (if separate APIs for customer)
+// Customer routes
 app.use("/api/customers", require("./routes/customerRoutes"));
 
 // -------------------- ROOT ROUTE --------------------
-// Optional health check endpoint
 app.get("/", (req, res) => {
   res.send("🌱 Nursery & Seed Management API is running...");
 });
 
-// -------------------- ERROR HANDLING --------------------
-// 404 route handler (optional)
+// -------------------- 404 HANDLER --------------------
+/*
+⚠️ IMPORTANT:
+- This runs only if no route matched
+*/
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// General error handler
+// -------------------- GLOBAL ERROR HANDLER --------------------
+/*
+⚠️ IMPORTANT:
+- `next` yaha use hota hai, but Express automatically pass karta hai
+- Is file me `next is not a function` kabhi nahi aayega
+*/
 app.use((err, req, res, next) => {
   console.error("Server Error:", err.stack);
-  res.status(500).json({ message: "Internal Server Error", error: err.message });
+  res.status(500).json({
+    message: "Internal Server Error",
+    error: err.message,
+  });
 });
 
 // -------------------- START SERVER --------------------
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
 
 /* -------------------- COMMENTS SUMMARY --------------------
-1. connectDB(): MongoDB connect (config/db.js)
-2. cors + express.json(): frontend requests aur JSON parsing
-3. All API routes added: auth, inventory, orders, suppliers, procurements, health, admin, sales, customers
-4. Root route: optional health check
-5. 404 + error handler added
-6. Server port: env.PORT or 5000
-7. No original code removed, only comments + clarity added
+✔ server.js is CLEAN
+✔ No middleware misuse
+✔ No route misuse
+✔ No "next is not a function" possible here
+
+👉 ISSUE IS 100% IN:
+   - authMiddleware.js
+   - OR orderRoutes.js (middleware usage)
 ------------------------------------------------------------ */

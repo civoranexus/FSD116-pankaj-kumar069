@@ -1,10 +1,7 @@
 const mongoose = require("mongoose");
 
 /* ======================================================
-   ORDER SCHEMA (PRODUCTION READY – PROFESSIONAL)
-   🔹 Clean, safe, ready for status updates
-   🔹 Soft delete supported
-   🔹 Full status history
+   ORDER SCHEMA (PRODUCTION READY – FIXED & SAFE)
 ====================================================== */
 const orderSchema = new mongoose.Schema(
   {
@@ -20,6 +17,9 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        ORDER ITEMS
+       🔥 FIX:
+       - items empty hone par error aayega
+       - price required rakha (snapshot of price)
     ========================= */
     items: [
       {
@@ -43,18 +43,18 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        TOTAL AMOUNT
+       🔥 FIX:
+       - auto calculated in pre-save
     ========================= */
     totalAmount: {
       type: Number,
       required: true,
       min: [0, "Total amount cannot be negative"],
+      default: 0, // 🔥 IMPORTANT FIX
     },
 
     /* =========================
        ORDER STATUS
-       🔥 MAIN FIX
-       - All possible values included
-       - Default = placed
     ========================= */
     status: {
       type: String,
@@ -73,8 +73,6 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        STATUS HISTORY
-       - Tracks all status changes
-       - Changed by which user
     ========================= */
     statusHistory: [
       {
@@ -119,7 +117,6 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        ORDER NUMBER
-       - Auto-generated if not provided
     ========================= */
     orderNumber: {
       type: String,
@@ -129,7 +126,6 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        PLACED BY ROLE
-       - customer, staff, admin
     ========================= */
     placedByRole: {
       type: String,
@@ -139,7 +135,6 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        SOFT DELETE
-       - Use this instead of hard delete
     ========================= */
     isDeleted: {
       type: Boolean,
@@ -152,39 +147,52 @@ const orderSchema = new mongoose.Schema(
 );
 
 /* ======================================================
-   PRE-SAVE HOOK
-   - Auto-generate order number if missing
-   - Initialize status history on creation
+   PRE-SAVE HOOK (🔥 MAJOR FIX HERE)
 ====================================================== */
 orderSchema.pre("save", function (next) {
-  // Auto order number
-  if (!this.orderNumber) {
-    this.orderNumber =
-      "ORD-" +
-      Date.now() +
-      "-" +
-      Math.floor(1000 + Math.random() * 9000);
-  }
+  try {
+    /* ❌ OLD (NO VALIDATION)
+       this.totalAmount manually expected
+    */
 
-  // Initial status history (ONLY ON CREATE)
-  if (this.isNew) {
-    this.statusHistory = [
-      {
-        status: this.status,
-        changedBy: this.customer,
-        changedAt: new Date(),
-      },
-    ];
-  }
+    /* ✅ NEW FIX 1: items validation */
+    if (!this.items || this.items.length === 0) {
+      return next(new Error("Order must contain at least one item"));
+    }
 
-  next();
+    /* ✅ NEW FIX 2: auto-calculate totalAmount */
+    this.totalAmount = this.items.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+
+    /* ✅ NEW FIX 3: auto order number */
+    if (!this.orderNumber) {
+      this.orderNumber =
+        "ORD-" +
+        Date.now() +
+        "-" +
+        Math.floor(1000 + Math.random() * 9000);
+    }
+
+    /* ✅ NEW FIX 4: status history only on create */
+    if (this.isNew) {
+      this.statusHistory = [
+        {
+          status: this.status,
+          changedBy: this.customer,
+          changedAt: new Date(),
+        },
+      ];
+    }
+
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 /* ======================================================
-   STATUS UPDATE HELPER (PROFESSIONAL & ASYNC)
-   🔹 Updates order.status
-   🔹 Pushes new record to statusHistory
-   🔹 Safe: call with await
+   STATUS UPDATE METHOD (SAFE ASYNC)
 ====================================================== */
 orderSchema.methods.updateStatus = async function (newStatus, userId) {
   this.status = newStatus;
@@ -195,7 +203,7 @@ orderSchema.methods.updateStatus = async function (newStatus, userId) {
     changedAt: new Date(),
   });
 
-  await this.save(); // 🔥 Save asynchronously
+  await this.save();
 };
 
 /* ======================================================
@@ -204,9 +212,9 @@ orderSchema.methods.updateStatus = async function (newStatus, userId) {
 module.exports = mongoose.model("Order", orderSchema);
 
 /* ======================================================
-   ❌ OLD / UNUSED CODE (KEPT FOR REFERENCE)
+   ❌ OLD / UNUSED CODE (KEPT FOR LEARNING)
 ====================================================== */
-// Old synchronous updateStatus (removed, see above async version)
+// ❌ OLD: no async safety
 // orderSchema.methods.updateStatus = function (newStatus, userId) {
 //   this.status = newStatus;
 //   this.statusHistory.push({

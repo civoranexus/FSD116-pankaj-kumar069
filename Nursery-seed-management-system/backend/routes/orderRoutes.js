@@ -14,7 +14,7 @@ const { protect, authorize } = require("../middleware/authMiddleware");
 
 /*
 =====================================================
-ROLE RULES (PROFESSIONAL STANDARD)
+ROLE RULES (FINAL & CORRECT)
 -----------------------------------------------------
 Admin    → full access
 Staff    → operational access
@@ -23,31 +23,46 @@ Customer → only own data
 */
 
 /* =====================================================
-   CUSTOMER ROUTES
+   PLACE ORDER (🔥 FINAL & SAFE)
 ==================================================== */
 
-/* ❌ OLD:
-router.post("/", protect, placeOrder); // no role check
-*/
+/*
+❌ OLD (BUGGY / CONFUSING)
+- Staff/Admin ko allow kiya tha
+- Frontend customerId nahi bhejta
+- Controller me 500 error aata tha
 
-/* ✅ NEW:
-- Any logged-in user (customer / staff / admin) can place order
-- authorize middleware ensures role-based access
-*/
 router.post(
   "/",
   protect,
   authorize("customer", "staff", "admin"),
   placeOrder
 );
-
-/* ❌ OLD:
-router.get("/my-orders", protect, getMyOrders); // no role check
 */
 
-/* ✅ NEW:
-- Only customer can fetch their own orders
-- Must be before dynamic "/:id" route
+/* ✅ FINAL FIX:
+- Sirf CUSTOMER order place karega
+- Frontend + backend perfectly aligned
+*/
+router.post(
+  "/",
+  protect,
+  authorize("customer"),
+  placeOrder // ⚠️ FUNCTION CALL NAHI, REFERENCE HAI
+);
+
+/* =====================================================
+   CUSTOMER ROUTES
+==================================================== */
+
+/*
+❌ OLD:
+router.get("/my-orders", protect, getMyOrders);
+*/
+
+/* ✅ FINAL:
+- Sirf customer apne orders dekhega
+- MUST be before "/:id"
 */
 router.get(
   "/my-orders",
@@ -60,14 +75,13 @@ router.get(
    STAFF & ADMIN ROUTES
 ==================================================== */
 
-/* ❌ OLD:
-router.get("/", protect, getOrders); // no role check
+/*
+❌ OLD:
+router.get("/", protect, getOrders);
 */
 
-/* ✅ NEW:
-- Only admin or staff can fetch all orders
-- Populates customer + items
-- Sorted by creation date
+/* ✅ FINAL:
+- Sirf admin & staff
 */
 router.get(
   "/",
@@ -77,25 +91,13 @@ router.get(
 );
 
 /* =====================================================
-   DYNAMIC ROUTES (ALWAYS LAST)
+   STATUS UPDATE ROUTE (🔥 VERY IMPORTANT ORDER)
 ==================================================== */
 
 /*
-- Fetch single order by ID
-- Role-based access:
-  - Customer → only own order
-  - Staff / Admin → any order
-*/
-router.get(
-  "/:id",
-  protect,
-  authorize("admin", "staff", "customer"),
-  getOrderById
-);
-
-/*
-- Update order status (admin / staff)
-- Route: /api/orders/:id/status
+❗ IMPORTANT:
+- Ye route "/:id" se pehle hona chahiye
+- Warna "status" ko Express id samajh lega
 */
 router.put(
   "/:id/status",
@@ -105,12 +107,26 @@ router.put(
 );
 
 /* =====================================================
+   GET ORDER BY ID
+==================================================== */
+
+/*
+- Customer → sirf apna order
+- Staff/Admin → koi bhi
+*/
+router.get(
+  "/:id",
+  protect,
+  authorize("admin", "staff", "customer"),
+  getOrderById
+);
+
+/* =====================================================
    ADMIN ONLY
 ==================================================== */
 
 /*
-- Soft delete order
-- Only admin allowed
+- Soft delete
 */
 router.delete(
   "/:id",
@@ -120,6 +136,14 @@ router.delete(
 );
 
 /* =====================================================
-   EXPORT ROUTER
+   EXPORT
 ==================================================== */
 module.exports = router;
+
+/* =====================================================
+   ❌ OLD / UNUSED ROUTES (KEPT FOR LEARNING)
+==================================================== */
+/*
+// router.put("/:id", updateOrderStatus); ❌ unclear
+// router.delete("/:id", deleteOrder); ❌ unsafe
+*/

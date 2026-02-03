@@ -10,6 +10,7 @@ API INSTANCE
 */
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
+  withCredentials: false, // ✅ explicit (future-proof)
 });
 
 /*
@@ -24,8 +25,13 @@ API.interceptors.request.use(
   (req) => {
     const token = localStorage.getItem("token");
 
-    // Ensure headers object exists
-    req.headers = req.headers || {};
+    // ❌ OLD (implicit headers)
+    // req.headers = req.headers || {};
+
+    // ✅ NEW (safe)
+    if (!req.headers) {
+      req.headers = {};
+    }
 
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
@@ -34,7 +40,6 @@ API.interceptors.request.use(
     return req;
   },
   (error) => {
-    // Request error (network, config issues)
     return Promise.reject(error);
   }
 );
@@ -44,24 +49,35 @@ API.interceptors.request.use(
 RESPONSE INTERCEPTOR
 =====================================================
 Purpose:
-- Handle 401 (unauthorized / expired token) globally
-- Clean up token & role from localStorage
-- Redirect to login page
+- Handle auth errors globally
+- Avoid breaking checkout / async flows
 */
 API.interceptors.response.use(
-  (res) => res, // Pass successful responses
+  (response) => response,
+
   (error) => {
+    /* ❌ OLD (unsafe – can crash when response undefined)
     if (error.response && error.response.status === 401) {
-      // Token expired or invalid
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      alert("Session expired or unauthorized. Please login again.");
+      window.location.href = "/login";
+    }
+    */
+
+    /* ✅ NEW SAFE HANDLING */
+    if (error?.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
 
-      alert("Session expired or unauthorized. Please login again.");
+      // ❌ alert UX breaks checkout
+      // alert("Session expired or unauthorized. Please login again.");
 
-      // Force redirect to login
-      window.location.href = "/login";
+      // ✅ silent redirect
+      window.location.replace("/login");
     }
 
+    // ✅ Always reject properly so frontend can show message
     return Promise.reject(error);
   }
 );
