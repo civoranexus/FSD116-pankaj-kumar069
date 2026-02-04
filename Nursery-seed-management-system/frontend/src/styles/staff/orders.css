@@ -380,3 +380,308 @@
     text-align: left;
   }
 }
+
+/* =====================================================
+   STAFF ORDERS – ENTERPRISE GRADE CSS
+   Inspired by Amazon / Flipkart Ops Panel
+===================================================== */
+
+:root {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --border-light: #e5e7eb;
+
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+
+  --primary: #2563eb;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.orders-page {
+  padding: 32px;
+  background: var(--bg-page);
+  min-height: 100vh;
+}
+
+.orders-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+}
+
+/* =====================================================
+   ORDER CARD
+===================================================== */
+
+.order-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* =====================================================
+   CARD HEADER
+===================================================== */
+
+.order-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-id-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.order-id-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  word-break: break-all;
+}
+
+/* =====================================================
+   STATUS BADGE
+===================================================== */
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.status-placed {
+  background: #64748b;
+}
+
+.status-confirmed {
+  background: #2563eb;
+}
+
+.status-packed {
+  background: #7c3aed;
+}
+
+.status-shipped {
+  background: #0d9488;
+}
+
+.status-delivered {
+  background: #16a34a;
+}
+
+.status-completed {
+  background: #15803d;
+}
+
+/* =====================================================
+   CARD BODY
+===================================================== */
+
+.order-card-body {
+  padding: 24px;
+}
+
+.order-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.order-info label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.order-info p {
+  font-size: 14px;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.order-info small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* =====================================================
+   ITEMS LIST
+===================================================== */
+
+.order-items {
+  margin-top: 20px;
+}
+
+.order-items ul {
+  margin-top: 8px;
+  padding-left: 18px;
+}
+
+.order-items li {
+  font-size: 13px;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.order-actions {
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.order-action-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.order-action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.order-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+  .orders-page {
+    padding: 20px;
+  }
+
+  .order-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .order-actions {
+    gap: 8px;
+  }
+}
+
+/* =====================================================
+   ORDER STATUS TIMELINE
+===================================================== */
+
+.order-timeline {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #cbd5f5;
+}
+
+.timeline-label {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: capitalize;
+}
+
+.timeline-step.completed .timeline-dot {
+  background: #16a34a;
+}
+
+.timeline-step.active .timeline-dot {
+  background: #2563eb;
+}
+
+.timeline-step.completed .timeline-label,
+.timeline-step.active .timeline-label {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.timeline-line {
+  width: 32px;
+  height: 2px;
+  background: #e5e7eb;
+}
+
+.timeline-line.completed {
+  background: #16a34a;
+}
+
+/* =====================================================
+   SEARCH BAR
+===================================================== */
+
+.orders-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.orders-search {
+  padding: 10px 14px;
+  width: 280px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.orders-search:focus {
+  outline: none;
+  border-color: #2563eb;
+}

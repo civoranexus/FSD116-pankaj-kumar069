@@ -185,9 +185,10 @@ orderSchema.pre("save", function (next) {
       ];
     }
 
-    next();
-  } catch (err) {
-    next(err);
+    // next();
+  } 
+  catch (err) {
+    console.log(err); 
   }
 });
 

@@ -165,6 +165,89 @@ const theme = {
     buttonHeight: "44px",
     navbarHeight: "64px",
   },
+
+  // ==================================================
+  // ➕ ENTERPRISE UX/UI ADDITIONS (NO EXISTING CODE TOUCHED)
+  // ==================================================
+
+  // ----------------------------------
+  // 🧠 ACCESSIBILITY (WCAG friendly)
+  // ----------------------------------
+  accessibility: {
+    focusRing: "0 0 0 3px rgba(27,154,170,0.35)",
+    disabledOpacity: 0.6,
+    minTouchTarget: "44px",
+  },
+
+  // ----------------------------------
+  // 🧩 COMPONENT TOKENS
+  // ----------------------------------
+  components: {
+    button: {
+      primary: {
+        background: "#1B9AAA",
+        hover: "#16808D",
+        text: "#FFFFFF",
+      },
+      secondary: {
+        background: "#142C52",
+        hover: "#0F2342",
+        text: "#FFFFFF",
+      },
+      danger: {
+        background: "#EF4444",
+        hover: "#EB1414",
+        text: "#FFFFFF",
+      },
+    },
+
+    input: {
+      background: "#FFFFFF",
+      border: "#E5E7EB",
+      focusBorder: "#1B9AAA",
+      placeholder: "#9CA3AF",
+    },
+
+    card: {
+      background: "#FFFFFF",
+      border: "#E5E7EB",
+      shadow: "0 4px 10px rgba(0,0,0,0.08)",
+    },
+
+    table: {
+      headerBg: "#F1F5F9",
+      rowHover: "#F8FAFC",
+      border: "#E5E7EB",
+    },
+  },
+
+  // ----------------------------------
+  // 📊 STATUS BADGES (Orders, Inventory)
+  // ----------------------------------
+  status: {
+    pending: {
+      bg: "#FEF3C7",
+      text: "#92400E",
+    },
+    completed: {
+      bg: "#DCFCE7",
+      text: "#166534",
+    },
+    cancelled: {
+      bg: "#FEE2E2",
+      text: "#991B1B",
+    },
+  },
+
+  // ----------------------------------
+  // 🪜 ELEVATION LEVELS (Dashboard depth)
+  // ----------------------------------
+  elevation: {
+    level0: "none",
+    level1: "0 1px 2px rgba(0,0,0,0.05)",
+    level2: "0 4px 10px rgba(0,0,0,0.08)",
+    level3: "0 10px 20px rgba(0,0,0,0.12)",
+  },
 };
 
 export default theme;

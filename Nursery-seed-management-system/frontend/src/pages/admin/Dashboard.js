@@ -36,7 +36,7 @@ function Dashboard() {
           totalSeeds: 0,
           totalOrders: data.length,
           revenue: data.reduce((sum, o) => sum + (o.totalAmount || 0), 0),
-          pendingOrders: data.filter((o) => o.status === "Pending").length,
+          pendingOrders: data.filter((o) => o.status === "pending").length,
         });
       } catch (error) {
         console.error("Dashboard data fetch error:", error);
