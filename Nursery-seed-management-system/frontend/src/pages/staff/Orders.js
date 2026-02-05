@@ -3,10 +3,8 @@ import API from "../../api";
 import "../../styles/customer/orders.css";
 
 /* ======================================================
-   STAFF / ADMIN ORDERS
-   - Professional Orders List
-   - Expandable Order Details
-   - Full Status Flow Control
+   STAFF / ADMIN ORDERS – CARD BASED & RESPONSIVE
+   (UI/UX ONLY – FUNCTIONALITY UNCHANGED)
 ====================================================== */
 
 const ORDER_FLOW = [
@@ -24,9 +22,6 @@ const Orders = () => {
   const [error, setError] = useState("");
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  /* =========================
-     FETCH ORDERS
-  ========================= */
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -34,7 +29,6 @@ const Orders = () => {
       setOrders(res.data || []);
       setError("");
     } catch (err) {
-      console.error("Fetch orders error:", err);
       setError("Failed to load orders");
     } finally {
       setLoading(false);
@@ -45,26 +39,18 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
-  /* =========================
-     UPDATE ORDER STATUS
-     - Safe, backend enum compliant
-  ========================= */
   const updateStatus = async (orderId, status) => {
     try {
       await API.put(`/orders/${orderId}/status`, { status });
-      fetchOrders(); // refresh after update
+      fetchOrders();
     } catch (err) {
-      console.error("Update status error:", err.response || err);
       alert(
         err.response?.data?.message ||
-          "Failed to update order status (check role or status)"
+          "Failed to update order status"
       );
     }
   };
 
-  /* =========================
-     STATUS COLOR
-  ========================= */
   const statusColor = (status = "") => {
     switch (status.toLowerCase()) {
       case "placed":
@@ -86,199 +72,223 @@ const Orders = () => {
     }
   };
 
-  /* =========================
-     CHECK IF STATUS IS CLICKABLE
-     - Only next status is enabled
-     - Past statuses disabled
-  ========================= */
   const isStatusDisabled = (currentStatus, buttonStatus) => {
     const currentIndex = ORDER_FLOW.indexOf(currentStatus);
     const buttonIndex = ORDER_FLOW.indexOf(buttonStatus);
-    return buttonIndex <= currentIndex; // disable past & current
+    return buttonIndex <= currentIndex;
   };
 
-  /* =========================
-     UI STATES
-  ========================= */
-  if (loading) return <p style={{ padding: 20 }}>Loading orders...</p>;
-  if (error) return <p style={{ padding: 20, color: "red" }}>{error}</p>;
-  if (orders.length === 0)
-    return <p style={{ padding: 20 }}>📦 No orders found</p>;
+  if (loading) return <p style={stateText}>Loading orders…</p>;
+  if (error) return <p style={{ ...stateText, color: "#dc2626" }}>{error}</p>;
+  if (orders.length === 0) return <p style={stateText}>📦 No orders found</p>;
 
-  /* =========================
-     RENDER
-  ========================= */
   return (
-    <div style={{ padding: 20 }}>
-      <h2 style={{ marginBottom: 20 }}>📦 Customer Orders (Staff / Admin)</h2>
+    <div style={container}>
+      <h2 style={title}>📦 Customer Orders</h2>
 
-      <table style={table}>
-        <thead>
-          <tr style={thead}>
-            <th style={th}>Order ID</th>
-            <th style={th}>Customer</th>
-            <th style={th}>Amount</th>
-            <th style={th}>Status</th>
-            <th style={th}>Action</th>
-          </tr>
-        </thead>
+      <div style={cardGrid}>
+        {orders.map((order) => (
+          <div key={order._id} style={orderCard}>
+            <div style={cardHeader}>
+              <div>
+                <div style={orderId}>#{order._id.slice(-6)}</div>
+                <div style={customerName}>
+                  {order.customer?.name || "Customer"}
+                </div>
+              </div>
+              <span
+                style={{
+                  ...statusBadge,
+                  background: statusColor(order.status),
+                }}
+              >
+                {order.status}
+              </span>
+            </div>
 
-        <tbody>
-          {orders.map((order) => (
-            <React.Fragment key={order._id}>
-              {/* ===== SUMMARY ROW ===== */}
-              <tr style={row}>
-                <td style={td}>{order._id.slice(-6)}</td>
-                <td style={td}>{order.customer?.name || "Customer"}</td>
-                <td style={td}>₹{order.totalAmount}</td>
-                <td style={td}>
-                  <span
-                    style={{
-                      color: statusColor(order.status),
-                      fontWeight: 600,
-                    }}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td style={td}>
-                  <button
-                    style={viewBtn}
-                    onClick={() =>
-                      setExpandedOrderId(
-                        expandedOrderId === order._id ? null : order._id
-                      )
-                    }
-                  >
-                    👁 View
-                  </button>
-                </td>
-              </tr>
+            <div style={cardBody}>
+              <div style={amount}>₹{order.totalAmount}</div>
+              <button
+                style={viewBtn}
+                onClick={() =>
+                  setExpandedOrderId(
+                    expandedOrderId === order._id ? null : order._id
+                  )
+                }
+              >
+                {expandedOrderId === order._id ? "Hide Details" : "View Details"}
+              </button>
+            </div>
 
-              {/* ===== DETAILS ===== */}
-              {expandedOrderId === order._id && (
-                <tr>
-                  <td colSpan="5" style={detailsRow}>
-                    <div style={detailsBox}>
-                      <p>
-                        <b>Customer:</b> {order.customer?.name} (
-                        {order.customer?.email})
-                      </p>
-                      <p>
-                        <b>Order ID:</b> {order._id}
-                      </p>
-                      <p>
-                        <b>Total:</b> ₹{order.totalAmount}
-                      </p>
+            {expandedOrderId === order._id && (
+              <div style={detailsBox}>
+                <div style={detailItem}>
+                  <b>Order ID</b>
+                  <span>{order._id}</span>
+                </div>
 
-                      <div>
-                        <b>Items:</b>
-                        <ul>
-                          {order.items.map((item, i) => (
-                            <li key={i}>
-                              {item.product?.name || "Seed"} ×{" "}
-                              {item.quantity} (@ ₹{item.price})
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                <div style={detailItem}>
+                  <b>Email</b>
+                  <span>{order.customer?.email}</span>
+                </div>
 
-                      {/* ===== STATUS ACTION BUTTONS ===== */}
-                      <div style={{ marginTop: 12 }}>
-                        {ORDER_FLOW.map((status, i) => (
-                          <button
-                            key={i}
-                            style={{
-                              ...actionBtn,
-                              background: statusColor(status),
-                              opacity: isStatusDisabled(order.status, status)
-                                ? 0.5
-                                : 1,
-                              cursor: isStatusDisabled(order.status, status)
-                                ? "not-allowed"
-                                : "pointer",
-                            }}
-                            disabled={isStatusDisabled(order.status, status)}
-                            onClick={() => updateStatus(order._id, status)}
-                          >
-                            {status === "confirmed" && "✅ Confirm"}
-                            {status === "packed" && "📦 Packed"}
-                            {status === "shipped" && "🚚 Shipped"}
-                            {status === "delivered" && "📬 Delivered"}
-                            {status === "completed" && "✔ Complete"}
-                            {status === "placed" && "📌 Placed"}
-                            {status === "cancelled" && "❌ Cancelled"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+                <div style={itemsBox}>
+                  <b>Items</b>
+                  <ul style={itemsList}>
+                    {order.items.map((item, i) => (
+                      <li key={i}>
+                        {item.product?.name || "Item"} × {item.quantity} (₹
+                        {item.price})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-      {/* =====================================================
-         ❌ OLD VERSION (REFERENCE ONLY – DO NOT DELETE)
-      ===================================================== */}
-      {/*
-      orders.map(order => (
-        <div key={order._id}>
-          {order.customer?.name} - ₹{order.totalAmount}
-        </div>
-      ))
-      */}
+                <div style={statusActions}>
+                  {ORDER_FLOW.map((status) => (
+                    <button
+                      key={status}
+                      style={{
+                        ...actionBtn,
+                        background: statusColor(status),
+                        opacity: isStatusDisabled(order.status, status)
+                          ? 0.4
+                          : 1,
+                        cursor: isStatusDisabled(order.status, status)
+                          ? "not-allowed"
+                          : "pointer",
+                      }}
+                      disabled={isStatusDisabled(order.status, status)}
+                      onClick={() => updateStatus(order._id, status)}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 /* =========================
-   STYLES
+   STYLES (CARD + RESPONSIVE)
 ========================= */
-const table = {
-  width: "100%",
-  borderCollapse: "collapse",
+
+const container = {
+  padding: 20,
+  background: "#f8fafc",
+  minHeight: "100vh",
+};
+
+const title = {
+  marginBottom: 20,
+  fontSize: 22,
+  fontWeight: 700,
+};
+
+const cardGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gap: 16,
+};
+
+const orderCard = {
   background: "#fff",
+  borderRadius: 14,
+  boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
+  padding: 16,
+  display: "flex",
+  flexDirection: "column",
 };
 
-const thead = {
-  background: "#f1f5f9",
-  textAlign: "left",
+const cardHeader = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 12,
 };
 
-const row = {
-  borderBottom: "1px solid #e5e7eb",
+const orderId = {
+  fontSize: 13,
+  color: "#64748b",
 };
 
-const th = { padding: 12, fontWeight: 600 };
-const td = { padding: 12 };
+const customerName = {
+  fontWeight: 600,
+  fontSize: 15,
+};
+
+const statusBadge = {
+  padding: "4px 10px",
+  borderRadius: 999,
+  color: "#fff",
+  fontSize: 12,
+  fontWeight: 600,
+};
+
+const cardBody = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+};
+
+const amount = {
+  fontSize: 18,
+  fontWeight: 700,
+};
 
 const viewBtn = {
-  padding: "6px 10px",
-  border: "1px solid #cbd5f5",
-  background: "#fff",
-  borderRadius: 6,
+  padding: "6px 14px",
+  borderRadius: 8,
+  border: "1px solid #c7d2fe",
+  background: "#eef2ff",
   cursor: "pointer",
-};
-
-const detailsRow = {
-  background: "#f8fafc",
 };
 
 const detailsBox = {
-  padding: 16,
-  borderLeft: "4px solid #2563eb",
+  marginTop: 16,
+  paddingTop: 16,
+  borderTop: "1px solid #e5e7eb",
+};
+
+const detailItem = {
+  display: "flex",
+  justifyContent: "space-between",
+  fontSize: 14,
+  marginBottom: 8,
+};
+
+const itemsBox = {
+  marginTop: 10,
+};
+
+const itemsList = {
+  marginTop: 6,
+  paddingLeft: 18,
+  fontSize: 14,
+};
+
+const statusActions = {
+  marginTop: 14,
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 8,
 };
 
 const actionBtn = {
-  marginRight: 8,
-  padding: "6px 12px",
-  color: "#fff",
+  padding: "6px 14px",
+  borderRadius: 8,
   border: "none",
-  borderRadius: 6,
-  cursor: "pointer",
+  color: "#fff",
+  fontSize: 13,
+};
+
+const stateText = {
+  padding: 24,
 };
 
 export default Orders;

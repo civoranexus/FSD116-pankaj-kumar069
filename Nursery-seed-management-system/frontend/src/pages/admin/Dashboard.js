@@ -4,11 +4,9 @@ import API from "../../api";
 
 function Dashboard() {
   const navigate = useNavigate();
-
   const role = localStorage.getItem("role");
 
   const [stats, setStats] = useState({
-    totalSeeds: 0,
     totalOrders: 0,
     revenue: 0,
     pendingOrders: 0,
@@ -23,7 +21,6 @@ function Dashboard() {
         let res;
 
         if (role === "customer") {
-          // ✅ FIXED ROUTE
           res = await API.get("/orders/my-orders");
         } else {
           res = await API.get("/orders");
@@ -33,13 +30,12 @@ function Dashboard() {
         setOrders(data);
 
         setStats({
-          totalSeeds: 0,
           totalOrders: data.length,
           revenue: data.reduce((sum, o) => sum + (o.totalAmount || 0), 0),
           pendingOrders: data.filter((o) => o.status === "pending").length,
         });
-      } catch (error) {
-        console.error("Dashboard data fetch error:", error);
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -48,60 +44,73 @@ function Dashboard() {
     fetchData();
   }, [role]);
 
-  /* UI CODE BELOW — unchanged */
-  const statsData = [
-    { title: "Total Orders", value: stats.totalOrders, icon: "🛒", color: "linear-gradient(135deg,#2196F3,#64B5F6)" },
-    { title: "Revenue", value: stats.revenue, icon: "💰", color: "linear-gradient(135deg,#FF9800,#FFB74D)" },
-    { title: "Pending Orders", value: stats.pendingOrders, icon: "⏳", color: "linear-gradient(135deg,#F44336,#E57373)" },
-  ];
+  /* ======================================================
+     🔴 ONLY ADMIN – CLEAN PROFESSIONAL DASHBOARD
+     ❌ NO RECENT ORDERS SECTION
+  ====================================================== */
+  if (role === "admin") {
+    return (
+      <div style={adminContainer}>
+        <div style={adminHeader}>
+          <h1>Admin Dashboard</h1>
+          <span style={roleBadge}>ADMIN</span>
+        </div>
 
-  const quickActionsCustomer = [
-    { title: "My Orders", icon: "🛒", link: "/my-orders", color: "#4CAF50" },
-    { title: "Cart", icon: "🛍️", link: "/cart", color: "#81C784" },
-    { title: "Plant Health", icon: "🌱", link: "/health", color: "#2196F3" },
-  ];
+        {/* STATS */}
+        <div style={statsGrid}>
+          <StatCard title="Total Orders" value={stats.totalOrders} icon="🛒" />
+          <StatCard title="Revenue" value={`₹${stats.revenue}`} icon="💰" />
+          <StatCard
+            title="Pending Orders"
+            value={stats.pendingOrders}
+            icon="⏳"
+          />
+        </div>
 
-  const quickActionsStaffAdmin = [
-    { title: "Orders", icon: "🛒", link: "/orders", color: "#4CAF50" },
-    { title: "Inventory", icon: "📦", link: "/inventory", color: "#2196F3" },
-    { title: "Sales Report", icon: "📊", link: "/sales-report", color: "#FF9800" },
-    { title: "Customers", icon: "👥", link: "/customers", color: "#9C27B0" },
-  ];
+        {/* QUICK ACTIONS */}
+        <h2 style={{ marginTop: 32 }}>Quick Actions</h2>
+        <div style={actionsGrid}>
+          <ActionCard
+            title="Orders"
+            icon="🛒"
+            onClick={() => navigate("/orders")}
+          />
+          <ActionCard
+            title="Inventory"
+            icon="📦"
+            onClick={() => navigate("/inventory")}
+          />
+          <ActionCard
+            title="Customers"
+            icon="👥"
+            onClick={() => navigate("/customers")}
+          />
+          <ActionCard
+            title="Reports"
+            icon="📊"
+            onClick={() => navigate("/sales-report")}
+          />
+        </div>
+      </div>
+    );
+  }
 
-  const quickActions = role === "customer" ? quickActionsCustomer : quickActionsStaffAdmin;
-
+  /* ======================================================
+     🟢 STAFF + CUSTOMER – OLD DASHBOARD (UNCHANGED)
+  ====================================================== */
   return (
-    <div style={{ padding: "20px", backgroundColor: "#f5f6fa" }}>
-      <h1 style={{ textAlign: "center" }}>Welcome to Nursery Seed Management</h1>
-
-      <p style={{ textAlign: "center", fontWeight: "bold" }}>
-        Logged in as: {role?.toUpperCase()}
+    <div style={{ padding: 20 }}>
+      <h1>Welcome</h1>
+      <p>
+        Logged in as: <b>{role?.toUpperCase()}</b>
       </p>
 
-      {/* Stats Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "20px" }}>
-        {statsData.map((stat, i) => (
-          <div key={i} style={{ background: stat.color, color: "#fff", padding: "20px", borderRadius: "12px", textAlign: "center" }}>
-            <div style={{ fontSize: "40px" }}>{stat.icon}</div>
-            <h3>{stat.title}</h3>
-            <p style={{ fontSize: "22px", fontWeight: "bold" }}>
-              {stat.title === "Revenue" ? `₹${stat.value}` : stat.value}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Orders Table */}
-      <h2 style={{ marginTop: "40px", textAlign: "center" }}>
-        {role === "customer" ? "Your Orders" : "Recent Orders"}
-      </h2>
-
       {loading ? (
-        <p style={{ textAlign: "center" }}>Loading orders...</p>
+        <p>Loading...</p>
       ) : orders.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No orders found.</p>
+        <p>No orders found</p>
       ) : (
-        <table style={{ width: "100%", marginTop: "20px", borderCollapse: "collapse" }}>
+        <table border="1" width="100%" cellPadding="10">
           <thead>
             <tr>
               <th>Order ID</th>
@@ -123,5 +132,77 @@ function Dashboard() {
     </div>
   );
 }
+
+/* ======================================================
+   SMALL UI COMPONENTS (ADMIN ONLY)
+====================================================== */
+
+const StatCard = ({ title, value, icon }) => (
+  <div style={statCard}>
+    <div style={{ fontSize: 30 }}>{icon}</div>
+    <p>{title}</p>
+    <h2>{value}</h2>
+  </div>
+);
+
+const ActionCard = ({ title, icon, onClick }) => (
+  <div style={actionCard} onClick={onClick}>
+    <div style={{ fontSize: 28 }}>{icon}</div>
+    <p>{title}</p>
+  </div>
+);
+
+/* =========================
+   STYLES
+========================= */
+
+const adminContainer = {
+  padding: 24,
+  background: "#f8fafc",
+  minHeight: "100vh",
+};
+
+const adminHeader = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+};
+
+const roleBadge = {
+  background: "#2563eb",
+  color: "#fff",
+  padding: "6px 14px",
+  borderRadius: 20,
+};
+
+const statsGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
+  gap: 16,
+  marginTop: 20,
+};
+
+const statCard = {
+  background: "#fff",
+  padding: 20,
+  borderRadius: 12,
+  boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+};
+
+const actionsGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))",
+  gap: 16,
+  marginTop: 16,
+};
+
+const actionCard = {
+  background: "#fff",
+  padding: 20,
+  borderRadius: 12,
+  cursor: "pointer",
+  textAlign: "center",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+};
 
 export default Dashboard;

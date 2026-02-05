@@ -1,7 +1,27 @@
 const mongoose = require("mongoose");
 
 /* ======================================================
-   ORDER SCHEMA (PRODUCTION READY – FIXED & SAFE)
+   CONSTANT ENUMS (🔥 SINGLE SOURCE OF TRUTH)
+====================================================== */
+const ORDER_STATUSES = [
+  "pending",
+  "placed",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "completed",
+  "cancelled",
+];
+
+const PAYMENT_STATUS = ["pending", "paid", "failed", "cod"];
+
+const PAYMENT_METHODS = ["cod", "upi", "card", "netbanking"];
+
+const USER_ROLES = ["customer", "staff", "admin"];
+
+/* ======================================================
+   ORDER SCHEMA (PRODUCTION READY)
 ====================================================== */
 const orderSchema = new mongoose.Schema(
   {
@@ -17,9 +37,6 @@ const orderSchema = new mongoose.Schema(
 
     /* =========================
        ORDER ITEMS
-       🔥 FIX:
-       - items empty hone par error aayega
-       - price required rakha (snapshot of price)
     ========================= */
     items: [
       {
@@ -31,26 +48,23 @@ const orderSchema = new mongoose.Schema(
         quantity: {
           type: Number,
           required: true,
-          min: [1, "Quantity must be at least 1"],
+          min: 1,
         },
         price: {
           type: Number,
           required: true,
-          min: [0, "Price cannot be negative"],
+          min: 0,
         },
       },
     ],
 
     /* =========================
        TOTAL AMOUNT
-       🔥 FIX:
-       - auto calculated in pre-save
     ========================= */
     totalAmount: {
       type: Number,
-      required: true,
-      min: [0, "Total amount cannot be negative"],
-      default: 0, // 🔥 IMPORTANT FIX
+      min: 0,
+      default: 0,
     },
 
     /* =========================
@@ -58,16 +72,8 @@ const orderSchema = new mongoose.Schema(
     ========================= */
     status: {
       type: String,
-      enum: [
-        "placed",
-        "confirmed",
-        "packed",
-        "shipped",
-        "delivered",
-        "completed",
-        "cancelled",
-      ],
-      default: "placed",
+      enum: ORDER_STATUSES,
+      // default: "pending",
       index: true,
     },
 
@@ -78,15 +84,7 @@ const orderSchema = new mongoose.Schema(
       {
         status: {
           type: String,
-          enum: [
-            "placed",
-            "confirmed",
-            "packed",
-            "shipped",
-            "delivered",
-            "completed",
-            "cancelled",
-          ],
+          enum: ORDER_STATUSES,
           required: true,
         },
         changedAt: {
@@ -105,14 +103,14 @@ const orderSchema = new mongoose.Schema(
     ========================= */
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Paid", "Failed", "COD"],
-      default: "Pending",
+      enum: PAYMENT_STATUS,
+      default: "pending",
     },
 
     paymentMethod: {
       type: String,
-      enum: ["COD", "UPI", "Card", "NetBanking"],
-      default: "COD",
+      enum: PAYMENT_METHODS,
+      default: "cod",
     },
 
     /* =========================
@@ -129,7 +127,7 @@ const orderSchema = new mongoose.Schema(
     ========================= */
     placedByRole: {
       type: String,
-      enum: ["customer", "staff", "admin"],
+      enum: USER_ROLES,
       required: true,
     },
 
@@ -141,67 +139,54 @@ const orderSchema = new mongoose.Schema(
       default: false,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 /* ======================================================
-   PRE-SAVE HOOK (🔥 MAJOR FIX HERE)
+   PRE-SAVE HOOK
 ====================================================== */
-orderSchema.pre("save", function (next) {
-  try {
-    /* ❌ OLD (NO VALIDATION)
-       this.totalAmount manually expected
-    */
+orderSchema.pre("save", function () {
+  if (!this.items || this.items.length === 0) {
+    throw new Error("Order must contain at least one item");
+  }
 
-    /* ✅ NEW FIX 1: items validation */
-    if (!this.items || this.items.length === 0) {
-      return next(new Error("Order must contain at least one item"));
-    }
+  // auto calculate total
+  this.totalAmount = this.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
-    /* ✅ NEW FIX 2: auto-calculate totalAmount */
-    this.totalAmount = this.items.reduce((sum, item) => {
-      return sum + item.price * item.quantity;
-    }, 0);
+  // auto order number
+  if (!this.orderNumber) {
+    this.orderNumber = `ORD-${Date.now()}-${Math.floor(
+      1000 + Math.random() * 9000
+    )}`;
+  }
 
-    /* ✅ NEW FIX 3: auto order number */
-    if (!this.orderNumber) {
-      this.orderNumber =
-        "ORD-" +
-        Date.now() +
-        "-" +
-        Math.floor(1000 + Math.random() * 9000);
-    }
-
-    /* ✅ NEW FIX 4: status history only on create */
-    if (this.isNew) {
-      this.statusHistory = [
-        {
-          status: this.status,
-          changedBy: this.customer,
-          changedAt: new Date(),
-        },
-      ];
-    }
-
-    // next();
-  } 
-  catch (err) {
-    console.log(err); 
+  // initial status history
+  if (this.isNew) {
+    this.statusHistory = [
+      {
+        status: this.status,
+        changedBy: this.customer,
+      },
+    ];
   }
 });
 
 /* ======================================================
-   STATUS UPDATE METHOD (SAFE ASYNC)
+   STATUS UPDATE METHOD (SAFE)
 ====================================================== */
 orderSchema.methods.updateStatus = async function (newStatus, userId) {
+  if (!ORDER_STATUSES.includes(newStatus)) {
+    throw new Error(`Invalid order status: ${newStatus}`);
+  }
+
   this.status = newStatus;
 
   this.statusHistory.push({
     status: newStatus,
     changedBy: userId,
-    changedAt: new Date(),
   });
 
   await this.save();
@@ -211,15 +196,3 @@ orderSchema.methods.updateStatus = async function (newStatus, userId) {
    EXPORT MODEL
 ====================================================== */
 module.exports = mongoose.model("Order", orderSchema);
-
-/* ======================================================
-   ❌ OLD / UNUSED CODE (KEPT FOR LEARNING)
-====================================================== */
-// ❌ OLD: no async safety
-// orderSchema.methods.updateStatus = function (newStatus, userId) {
-//   this.status = newStatus;
-//   this.statusHistory.push({
-//     status: newStatus,
-//     changedBy: userId,
-//   });
-// };

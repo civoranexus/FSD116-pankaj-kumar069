@@ -251,3 +251,17 @@ const theme = {
 };
 
 export default theme;
+
+// theme.js
+export const colors = {
+  primary: "#004d40",   // Civora Nexus green
+  secondary: "#ff9800", // Accent orange
+  background: "#f5f5f5",
+  text: "#212121"
+};
+
+export const typography = {
+  fontFamily: "'Roboto', sans-serif",
+  headingWeight: 600,
+  bodyWeight: 400
+};
