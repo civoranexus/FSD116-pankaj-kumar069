@@ -3,6 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors");
+const path = require('path');
 
 // -------------------- ENVIRONMENT VARIABLES --------------------
 dotenv.config();
@@ -23,6 +24,12 @@ app.use(express.json());
 /* ✅ FINAL (BEST PRACTICE ORDER) */
 app.use(cors());                 // Allow cross-origin requests
 app.use(express.json({ limit: "10mb" })); // JSON body parsing (safe limit)
+
+
+
+// Serve frontend build
+app.use(express.static(path.join(__dirname, 'build')));
+
 
 // -------------------- ROUTES --------------------
 
@@ -68,7 +75,7 @@ app.use((req, res, next) => {
 });
 
 
-app.get('*', (req, res) => {
+app.get('', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
