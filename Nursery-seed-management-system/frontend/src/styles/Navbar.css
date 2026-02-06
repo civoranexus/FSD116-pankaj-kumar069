@@ -1,35 +1,24 @@
 /* =====================================================
-   🧭 NAVBAR – PROFESSIONAL / PRODUCT UI
-   Author intent: Clean, calm, enterprise-level UX
+   NAVBAR – PROFESSIONAL ENTERPRISE UI
+   Style: Clean, Mature, Product-grade
    ===================================================== */
 
+/* ---------------------------
+   DESIGN TOKENS
+---------------------------- */
+:root {
+  --nav-bg: #0f172a;          /* slate-900 */
+  --nav-border: #1e293b;     /* slate-800 */
 
-/* =====================================================
-   ❌ OLD / DUPLICATE NAVBAR SYSTEM (KEPT FOR REFERENCE)
-   -----------------------------------------------------
-   Reason removed: 
-   - Two different navbar designs
-   - White + dark clash
-   - Inconsistent class names
-===================================================== */
-/*
-.navbar {
-  background: #ffffff;
+  --accent-green: #22c55e;   /* subtle product accent */
+  --accent-green-soft: rgba(34, 197, 94, 0.12);
+
+  --text-main: #f8fafc;      /* slate-50 */
+  --text-muted: #cbd5f5;     /* slate-300 */
+
+  --border-soft: rgba(255, 255, 255, 0.12);
+  --shadow-nav: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
-
-.nav-links {
-  display: flex;
-}
-
-.menu-toggle {
-  display: none;
-}
-*/
-
-
-/* =====================================================
-   ✅ ACTIVE NAVBAR SYSTEM
-===================================================== */
 
 /* ---------------------------
    BASE NAVBAR
@@ -37,13 +26,14 @@
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 1020;
+  z-index: 1000;
 
-  width: 100%;
   height: 64px;
+  width: 100%;
 
-  background: linear-gradient(90deg, #0f172a, #1e293b);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--shadow-nav);
 
   display: flex;
   align-items: center;
@@ -52,16 +42,14 @@
   padding: 0 24px;
 }
 
-
 /* ---------------------------
-   LEFT SECTION
+   LEFT
 ---------------------------- */
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 24px;
 }
-
 
 /* ---------------------------
    BRAND
@@ -71,27 +59,24 @@
   align-items: center;
   gap: 10px;
 
-  font-size: 18px;
-  font-weight: 800;
-  color: #f8fafc;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
 
   cursor: pointer;
   user-select: none;
 }
 
 .brand-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-
-  background: #34d399;
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+  background: var(--accent-green);
 }
 
 .brand-text {
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
-
 
 /* ---------------------------
    NAV LINKS
@@ -103,34 +88,31 @@
 }
 
 .nav-link {
-  position: relative;
-
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 6px;
 
   font-size: 14px;
-  font-weight: 600;
-  color: rgba(241, 245, 249, 0.9);
+  font-weight: 500;
 
+  color: var(--text-muted);
   text-decoration: none;
-  transition: background 0.2s ease,
-              transform 0.2s ease,
-              color 0.2s ease;
+
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.06);
 }
 
+/* ACTIVE */
 .nav-link.active {
-  background: rgba(52, 211, 153, 0.18);
-  color: #ecfeff;
+  color: var(--accent-green);
+  background: var(--accent-green-soft);
 }
-
 
 /* ---------------------------
-   CART BADGE
+   CART
 ---------------------------- */
 .cart-link {
   display: flex;
@@ -139,33 +121,31 @@
 }
 
 .cart-badge {
-  min-width: 20px;
-  height: 20px;
+  min-width: 18px;
+  height: 18px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
 
-  background: #ef4444;
-  color: #ffffff;
+  background: var(--accent-green);
+  color: #022c22;
 
   border-radius: 999px;
   padding: 0 6px;
 }
 
-
 /* ---------------------------
-   RIGHT SECTION
+   RIGHT
 ---------------------------- */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 14px;
 }
-
 
 /* ---------------------------
    ROLE BADGE
@@ -174,65 +154,55 @@
   padding: 6px 12px;
   border-radius: 999px;
 
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 600;
 
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  color: #e2e8f0;
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
 }
 
-
 /* ---------------------------
-   LOGOUT BUTTON
+   LOGOUT
 ---------------------------- */
 .logout-btn {
-  padding: 8px 14px;
-  border-radius: 10px;
+  padding: 7px 14px;
+  border-radius: 6px;
 
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 
   background: transparent;
-  color: #e2e8f0;
+  color: var(--text-main);
 
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--border-soft);
   cursor: pointer;
 
-  transition: background 0.2s ease,
-              transform 0.2s ease,
-              box-shadow 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-
 /* ---------------------------
-   HAMBURGER (MOBILE)
+   HAMBURGER
 ---------------------------- */
 .navbar-hamburger {
   display: none;
 
   background: transparent;
-  color: #e2e8f0;
+  color: var(--text-main);
 
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
 
   padding: 6px 12px;
-  cursor: pointer;
   font-size: 18px;
+  cursor: pointer;
 }
 
-
 /* ---------------------------
-   RESPONSIVE (MOBILE)
+   MOBILE
 ---------------------------- */
 @media (max-width: 900px) {
   .navbar-links {
@@ -241,14 +211,14 @@
     left: 0;
     right: 0;
 
-    background: #0b1220;
-    padding: 16px;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--nav-border);
 
+    display: none;
     flex-direction: column;
     gap: 12px;
 
-    display: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    padding: 16px;
   }
 
   .navbar-links.open {
@@ -262,4 +232,654 @@
   .navbar-right {
     display: none;
   }
+}
+
+
+:root {
+  /* Soft Natural Green Palette */
+  --green-50: #f6fbf8;
+  --green-100: #e9f5ee;
+  --green-200: #d4efe0;
+  --green-300: #b7e4cc;
+  --green-400: #8fd3ae;
+  --green-500: #6fbf97;
+  --green-600: #4fa37f;
+  --green-700: #3d8568;
+
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --white: #ffffff;
+
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-md: 0 10px 28px rgba(0,0,0,0.10);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* ======================================================
+   CUSTOMER NAVBAR – PROFESSIONAL UX/UI
+   Theme: Soft Natural Green (Nursery / Agri Product)
+   Experience Level: Enterprise / Production Ready
+====================================================== */
+
+/* ===============================
+   ROOT VARIABLES
+=============================== */
+:root {
+  --green-bg-main: #f4faf7;
+  --green-bg-soft: #e7f3ed;
+  --green-accent: #6fbf97;
+  --green-accent-dark: #4fa37f;
+  --green-border: #cfe7db;
+
+  --text-primary: #1f2937;
+  --text-muted: #6b7280;
+
+  --white: #ffffff;
+
+  --shadow-light: 0 6px 20px rgba(0,0,0,0.06);
+  --shadow-medium: 0 10px 30px rgba(0,0,0,0.10);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* ===============================
+   NAVBAR BASE
+=============================== */
+.navbar {
+  height: 72px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--green-bg-main), var(--green-bg-soft));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  box-shadow: var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===============================
+   LEFT SECTION
+=============================== */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* BRAND */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-accent-dark);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ===============================
+   NAV LINKS
+=============================== */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-link {
+  position: relative;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 6px 4px;
+  text-decoration: none;
+  transition: color var(--transition-normal);
+}
+
+.nav-link:hover {
+  color: var(--green-accent-dark);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0%;
+  height: 2px;
+  background: var(--green-accent);
+  transition: width var(--transition-normal);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-link.active {
+  color: var(--green-accent-dark);
+  font-weight: 600;
+}
+
+/* ===============================
+   RIGHT SECTION
+=============================== */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ===============================
+   SEARCH
+=============================== */
+.navbar-search {
+  position: relative;
+}
+
+.navbar-search input {
+  width: 200px;
+  padding: 9px 14px 9px 36px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--green-border);
+  outline: none;
+  font-size: 14px;
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+.navbar-search input:focus {
+  border-color: var(--green-accent);
+}
+
+/* ===============================
+   BUTTONS
+=============================== */
+.navbar-btn {
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navbar-btn.primary {
+  background: var(--green-accent);
+  color: var(--white);
+  border: none;
+}
+
+.navbar-btn.primary:hover {
+  background: var(--green-accent-dark);
+}
+
+.navbar-btn.outline {
+  background: transparent;
+  color: var(--green-accent-dark);
+  border: 1px solid var(--green-border);
+}
+
+.navbar-btn.outline:hover {
+  background: var(--green-bg-soft);
+}
+
+/* ===============================
+   ICON BUTTON
+=============================== */
+.navbar-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--green-bg-soft);
+  color: var(--green-accent-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.navbar-icon-btn:hover {
+  background: var(--green-border);
+}
+
+/* ===============================
+   PROFILE
+=============================== */
+.navbar-profile {
+  position: relative;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-bg-soft);
+  color: var(--green-accent-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* DROPDOWN */
+.profile-dropdown {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  width: 220px;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-medium);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all var(--transition-normal);
+}
+
+.navbar-profile.open .profile-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.profile-dropdown a {
+  display: block;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.profile-dropdown a:hover {
+  background: var(--green-bg-main);
+}
+
+.profile-dropdown a.logout {
+  color: #dc2626;
+}
+
+/* ===============================
+   MOBILE MENU
+=============================== */
+.navbar-hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--green-accent-dark);
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 900px) {
+  .navbar-links {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    background: var(--white);
+    flex-direction: column;
+    gap: 0;
+    box-shadow: var(--shadow-medium);
+    display: none;
+  }
+
+  .navbar-links.open {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: 14px 24px;
+  }
+
+  .nav-link::after {
+    display: none;
+  }
+
+  .navbar-right {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: block;
+  }
+}
+
+/* ===============================
+   FINAL POLISH
+=============================== */
+.navbar,
+.navbar * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navbar a {
+  text-decoration: none;
+}
+
+
+/* ======================================================
+   CUSTOMER NAVBAR – DARK NATURE UX/UI
+   Tone: Calm Dark Green (Nursery / Organic / Premium)
+====================================================== */
+
+:root {
+  /* 🌿 DARK NATURE BACKGROUND */
+  --nav-bg-main: #1f2f2b;      /* main dark green */
+  --nav-bg-soft: #243834;      /* gradient depth */
+  --nav-hover: #2e4a43;       /* hover bg */
+
+  /* 🌱 ACCENT */
+  --green-accent: #7fc8a9;
+  --green-accent-soft: #9fdac1;
+
+  /* 🧾 TEXT */
+  --text-primary: #e5f3ee;
+  --text-muted: #b7d6cc;
+
+  /* 🧱 BORDER */
+  --border-soft: rgba(255,255,255,0.08);
+
+  /* 🌫 SHADOW */
+  --shadow-light: 0 8px 24px rgba(0,0,0,0.35);
+  --shadow-medium: 0 12px 40px rgba(0,0,0,0.45);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* ===============================
+   NAVBAR BASE
+=============================== */
+.navbar {
+  height: 72px;
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--nav-bg-main),
+    var(--nav-bg-soft)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  box-shadow: var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===============================
+   LEFT
+=============================== */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+/* BRAND */
+.navbar-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-accent);
+  cursor: pointer;
+  letter-spacing: 0.4px;
+}
+
+/* ===============================
+   NAV LINKS
+=============================== */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-link {
+  position: relative;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 6px 4px;
+  transition: color var(--transition-normal);
+}
+
+.nav-link:hover {
+  color: var(--green-accent-soft);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0%;
+  height: 2px;
+  background: var(--green-accent);
+  transition: width var(--transition-normal);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-link.active {
+  font-weight: 600;
+  color: var(--green-accent);
+}
+
+/* ===============================
+   RIGHT
+=============================== */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ===============================
+   SEARCH
+=============================== */
+.navbar-search input {
+  width: 200px;
+  padding: 9px 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.navbar-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.navbar-search input:focus {
+  outline: none;
+  border-color: var(--green-accent);
+}
+
+/* ===============================
+   BUTTONS
+=============================== */
+.navbar-btn {
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navbar-btn.primary {
+  background: var(--green-accent);
+  color: #123027;
+  border: none;
+}
+
+.navbar-btn.primary:hover {
+  background: var(--green-accent-soft);
+}
+
+.navbar-btn.outline {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+}
+
+.navbar-btn.outline:hover {
+  background: var(--nav-hover);
+}
+
+/* ===============================
+   ICON BUTTON
+=============================== */
+.navbar-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  color: var(--green-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+}
+
+.navbar-icon-btn:hover {
+  background: var(--nav-hover);
+}
+
+/* ===============================
+   PROFILE
+=============================== */
+.navbar-profile {
+  position: relative;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--nav-hover);
+  color: var(--green-accent);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* DROPDOWN */
+.profile-dropdown {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  width: 220px;
+  background: #1a2623;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-medium);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all var(--transition-normal);
+}
+
+.navbar-profile.open .profile-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.profile-dropdown a {
+  display: block;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.profile-dropdown a:hover {
+  background: var(--nav-hover);
+}
+
+.profile-dropdown a.logout {
+  color: #ef4444;
+}
+
+/* ===============================
+   MOBILE
+=============================== */
+.navbar-hamburger {
+  display: none;
+  font-size: 24px;
+  color: var(--green-accent);
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .navbar-links {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    background: #1a2623;
+    flex-direction: column;
+    display: none;
+    box-shadow: var(--shadow-medium);
+  }
+
+  .navbar-links.open {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: 14px 24px;
+  }
+
+  .navbar-right {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: block;
+  }
+}
+
+/* ===============================
+   FINAL POLISH
+=============================== */
+.navbar,
+.navbar * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navbar a {
+  text-decoration: none;
 }
