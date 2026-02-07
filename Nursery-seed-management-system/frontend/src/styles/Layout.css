@@ -147,3 +147,162 @@
   </footer>
 </div>
 */
+
+
+/* ======================================================
+   🌱 LAYOUT - GLOBAL WRAPPER
+====================================================== */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  /* Typography system */
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #0f172a;
+
+  /* Subtle gradient professional background */
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  transition: background 0.3s ease;
+}
+
+/* Smooth scrolling for layout */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ======================================================
+   MAIN CONTENT AREA
+====================================================== */
+.layout-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  box-sizing: border-box;
+
+  /* Subtle shadow for inner focus */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .layout-main {
+    padding: 24px 20px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .layout-main {
+    padding: 20px 16px;
+  }
+}
+
+/* ======================================================
+   FOOTER
+====================================================== */
+.layout-footer {
+  background: #0f172a;
+  color: #cbd5f5;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px 24px;
+  text-align: center;
+  font-size: 14px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Footer inner layout */
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Footer title */
+.footer-title {
+  font-weight: 600;
+  color: #e5e7eb;
+  letter-spacing: 0.5px;
+}
+
+/* Divider dot */
+.footer-divider {
+  opacity: 0.6;
+  margin: 0 4px;
+}
+
+/* Copyright text */
+.footer-copy {
+  opacity: 0.85;
+}
+
+/* Hover subtle highlight for footer links (if any) */
+.footer-inner a {
+  color: #cbd5f5;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-inner a:hover {
+  color: #ffffff;
+}
+
+/* Mobile footer spacing */
+@media (max-width: 640px) {
+  .footer-inner {
+    gap: 6px;
+  }
+
+  .layout-footer {
+    font-size: 13px;
+    padding: 18px 16px;
+  }
+}
+
+/* ======================================================
+   RESPONSIVE & POLISH EFFECTS
+====================================================== */
+
+/* App-level smooth hover and shadow effects for cards inside main layout */
+.layout-main .card, 
+.layout-main .section {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.layout-main .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Professional subtle scrollbar (Webkit) */
+.layout-main::-webkit-scrollbar {
+  width: 8px;
+}
+.layout-main::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+.layout-main::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 8px;
+}
+.layout-main::-webkit-scrollbar-thumb:hover {
+  background: #a3bffa;
+}
+
+/* ======================================================
+   TRANSITION FOR THEME SWITCHING (if needed)
+====================================================== */
+body {
+  transition: background 0.3s ease, color 0.3s ease;
+}

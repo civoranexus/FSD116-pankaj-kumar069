@@ -98,3 +98,126 @@
   border-radius: 6px;
   margin-bottom: 15px;
 }
+
+/* My Orders Page Container */
+.my-orders-page {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  background: #f9f9f9;
+}
+
+/* Orders Grid */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Individual Order Card */
+.order-card {
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.order-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Card Header & Body */
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.order-card-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+
+.status-badge.pending {
+  background: #fff4e5;
+  color: #b35c00;
+}
+
+.status-badge.confirmed {
+  background: #e7f7ff;
+  color: #1b6fd1;
+}
+
+.status-badge.packed {
+  background: #f4f4f4;
+  color: #555;
+}
+
+.status-badge.shipped {
+  background: #e6ffed;
+  color: #1a7f3a;
+}
+
+.status-badge.completed {
+  background: #d4f7ff;
+  color: #0b5f8a;
+}
+
+.status-badge.cancelled {
+  background: #ffe6e6;
+  color: #b30000;
+}
+
+/* Empty Orders Section */
+.empty-orders {
+  padding: 40px;
+  background: #fff9f2;
+  border: 1px dashed #f1c27d;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px;
+  color: #b35c00;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: background 0.3s ease;
+}
+.empty-orders:hover {
+  background: #fff5e0;
+}
+
+/* Soft Error Message */
+.soft-error {
+  background: #fff3cd;
+  color: #856404;
+  padding: 14px 20px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .order-card-header {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .my-orders-page {
+    padding: 20px;
+  }
+}
