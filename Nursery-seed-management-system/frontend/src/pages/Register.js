@@ -3,9 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
 /* =====================================================
-   REGISTER PAGE – ENHANCED UX/UI
-   👉 Same design language as Login
-   👉 Accessible, scalable, interview-ready
+   REGISTER PAGE – CUSTOMER ONLY
+   ❌ Admin / Staff self-register DISABLED
+   ✅ Only customer can register
 ===================================================== */
 
 function Register() {
@@ -15,10 +15,15 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // 🔒 Role is FIXED as customer (security reason)
+  const role = "customer";
+
+  /* ❌ OLD (DO NOT USE – SECURITY ISSUE)
   const [role, setRole] = useState("customer");
+  */
 
-  const [showPassword, setShowPassword] = useState(false); // ✅ UX IMPROVEMENT
-
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -27,7 +32,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (loading) return; // ✅ Prevent double submit
+    if (loading) return;
 
     setLoading(true);
     setErrorMsg("");
@@ -38,14 +43,13 @@ function Register() {
         name,
         email,
         password,
-        role,
+        role, // ✅ always "customer"
       });
 
       setSuccessMsg(
         "Account created successfully. Redirecting to login..."
       );
 
-      // UX: short delay so success feels real
       setTimeout(() => navigate("/login"), 1600);
     } catch (error) {
       const message =
@@ -59,13 +63,11 @@ function Register() {
 
   return (
     <main className="auth-page" aria-label="Register page">
-
-      {/* ================= AUTH CARD ================= */}
       <section className="auth-card" role="form">
 
         <h2 className="auth-title">Create your account</h2>
         <p className="auth-subtitle">
-          Start managing your nursery professionally
+          Register as a customer to place orders
         </p>
 
         <form onSubmit={handleRegister} className="auth-form">
@@ -79,7 +81,6 @@ function Register() {
               value={name}
               autoComplete="name"
               onChange={(e) => setName(e.target.value)}
-              aria-label="Full name"
             />
             <label htmlFor="name">Full Name</label>
           </div>
@@ -93,7 +94,6 @@ function Register() {
               value={email}
               autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
-              aria-label="Email address"
             />
             <label htmlFor="email">Email Address</label>
           </div>
@@ -102,40 +102,39 @@ function Register() {
           <div className="input-group">
             <input
               id="password"
-              type={showPassword ? "text" : "password"} // ✅ SHOW/HIDE
+              type={showPassword ? "text" : "password"}
               required
               minLength={6}
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
-              aria-label="Password"
             />
             <label htmlFor="password">Password</label>
 
-            {/* ✅ UX FEATURE */}
             <span
               className="toggle-password"
               role="button"
               tabIndex={0}
-              aria-label="Toggle password visibility"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? "🙈" : "👁️"}
             </span>
 
-            {/* ✅ Light UX Hint */}
             <small className="input-hint">
               Minimum 6 characters
             </small>
           </div>
 
-          {/* ================= ROLE ================= */}
+          {/* =================================================
+              ❌ ROLE SELECTION REMOVED (SECURITY FIX)
+              Anyone could register as admin/staff earlier
+          ================================================= */}
+          {/*
           <div className="input-group">
             <select
               id="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              aria-label="User role"
             >
               <option value="customer">Customer</option>
               <option value="staff">Staff</option>
@@ -143,70 +142,26 @@ function Register() {
             </select>
             <label htmlFor="role">User Role</label>
           </div>
+          */}
 
           {/* ================= SUBMIT ================= */}
           <button
             type="submit"
             className={`auth-btn ${loading ? "loading" : ""}`}
             disabled={loading}
-            aria-busy={loading}
           >
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
         {/* ================= FEEDBACK ================= */}
-        {errorMsg && (
-          <p className="error-text" role="alert">
-            {errorMsg}
-          </p>
-        )}
+        {errorMsg && <p className="error-text">{errorMsg}</p>}
+        {successMsg && <p className="success-text">{successMsg}</p>}
 
-        {successMsg && (
-          <p className="success-text" role="status">
-            {successMsg}
-          </p>
-        )}
-
-        {/* ================= FOOT ================= */}
         <p className="auth-footer">
-          Already have an account?{" "}
-          <Link to="/login">Login</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </section>
-
-      {/* =====================================================
-          ❌ OLD VERSION (DO NOT DELETE – FOR LEARNING)
-      ===================================================== */}
-      {/*
-      <div
-        style={{
-          maxWidth: "400px",
-          margin: "2rem auto",
-          padding: "2rem",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          Register
-        </h2>
-        <form onSubmit={handleRegister}>
-          <input type="text" placeholder="Name" />
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <select>
-            <option value="customer">Customer</option>
-            <option value="staff">Staff</option>
-            <option value="admin">Admin</option>
-          </select>
-          <button type="submit">
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-      </div>
-      */}
     </main>
   );
 }
